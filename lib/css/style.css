@@ -1081,3 +1081,51 @@ footer h5 {
 .fa-20px {
   font-size: 20px;
 }
+.sub-title-paragraph span {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.sub-title-paragraph li,
+.sub-title-paragraph p {
+  font-size: 18px;
+}
+.metric {
+  position: absolute;
+  inset: 0;
+  top: 63%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.metric-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+.metric-item {
+  background: linear-gradient(to right, #212121bb, rgba(33, 33, 33, 0.1));
+  border-radius: 50px;
+  margin-bottom: 20px;
+  padding: 0 20px;
+  color: #fff;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.metric-item h3 {
+  color: #fff;
+}
+@media (min-width: 992px) {
+  .metric {
+    top: 0;
+  }
+  .metric-item {
+    padding: 10px 20px;
+  }
+  .ml-lg-n7,
+  .mx-lg-n7 {
+    margin-left: -6rem !important;
+  }
+}
