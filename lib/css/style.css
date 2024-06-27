@@ -1040,3 +1040,32 @@ h6 {
 .feature .btn-light {
   border: 1px solid #212121;
 }
+footer {
+  background-color: #212121;
+  color: #fff;
+  padding: 20px 25px;
+}
+footer .newletter {
+  margin-top: 40px;
+  margin-bottom: 61px;
+}
+footer .newletter h4 {
+  font-weight: 400;
+  font-size: 60px;
+  line-height: 56px;
+  margin-bottom: 12px;
+  color: #fff;
+}
+footer .links-wrapper {
+  border-top: 1px solid #e9e9e94d;
+  border-bottom: 1px solid #e9e9e94d;
+}
+footer .links-wrapper.row > .col-md-2 {
+  border-left: 1px solid #e9e9e94d;
+}
+footer ul li {
+  margin-bottom: 5px;
+}
+footer h5 {
+  font-size: 18px;
+}
