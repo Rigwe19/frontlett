@@ -671,6 +671,7 @@ h6 {
 .service .service-wrapper a {
   margin-top: 10px;
   text-decoration: underline !important;
+  font-weight: 600;
 }
 .focus-wrapper {
   display: grid;
@@ -780,6 +781,7 @@ h6 {
   display: block;
   margin-top: 10px;
   text-decoration: underline !important;
+  font-weight: 600;
 }
 
 .found-wrapper {
@@ -832,6 +834,7 @@ h6 {
   display: block;
   margin-top: 10px;
   text-decoration: underline !important;
+  font-weight: 600;
 }
 
 .join-item .shape {
@@ -857,6 +860,7 @@ h6 {
   text-align: center;
   display: block;
   text-decoration: underline !important;
+  font-weight: 600;
   margin-top: 30px;
   margin-bottom: 30px;
 }
@@ -876,4 +880,113 @@ h6 {
 }
 .join .arrows span i {
   font-size: 34px;
+}
+.investor .investor-wrapper .row {
+  border: 0.5px solid #a4a4a4;
+  border-left-width: 0;
+  border-right-width: 0;
+}
+.investor .investor-wrapper .row > div {
+  padding: 20px 0 20px 20px;
+}
+.investor .investor-wrapper .row div:not(:first-of-type) {
+  border-left: 0.5px solid #a4a4a4;
+}
+.investor .investor-wrapper .row span {
+  font-size: 18px;
+  font-weight: 500;
+  color: #000000;
+  margin-bottom: 20px;
+}
+.investor .investor-wrapper .row p {
+  /* font-size: 18px; */
+  font-weight: 500;
+  color: #000000;
+}
+.investor .investor-wrapper .row ul {
+  list-style: none;
+  font-size: 13px;
+}
+.investor .investor-wrapper .row ul li:before {
+  content: "✓";
+  margin: 0 0.3em;
+  font-weight: 600;
+}
+.investor .investor-wrapper .row ul li span {
+  font-weight: 500;
+  font-size: 13px;
+  color: #000;
+  display: inline;
+}
+.investor .investor-wrapper .row div.end {
+  padding: 10px;
+}
+.investor .investor-wrapper .row div.end > div {
+  background-color: #000;
+  padding: 18px 10px 18px 10px;
+}
+.investor .investor-wrapper .row span.end {
+  font-size: 17px;
+  line-height: 20.4px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.equity-wrapper {
+  display: grid;
+  row-gap: 10px;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  margin-bottom: 30px;
+}
+@media (min-width: 768px) {
+  .equity-wrapper {
+    column-gap: 16px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.equity-item {
+  border-radius: 12px;
+  padding: 20px;
+  background-color: #fff;
+}
+.equity .equity-img {
+  margin-bottom: 20px;
+}
+.equity .equity-img img {
+  height: 64px;
+  margin-bottom: 12px;
+}
+.equity .equity-img p {
+  font-size: 14px;
+}
+.equity-item {
+  color: #212121;
+}
+.equity .equity-title {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+.equity .equity-text .equity-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.equity .equity-text .equity-row.header {
+  color: #8e8e8e;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.equity .service-wrapper a {
+  text-align: center;
+  display: block;
+  text-decoration: underline !important;
+  font-weight: 600;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  margin-top: 20px;
 }
