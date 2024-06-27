@@ -25,6 +25,9 @@ a {
 a:hover {
   color: #474747 !important;
 }
+.logo {
+  height: 60px;
+}
 img {
   max-width: 100%;
   height: auto;
