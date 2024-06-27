@@ -749,6 +749,122 @@
         </div>
     </section>
     <!-- End Join -->
+
+    <!-- Blog -->
+    <section class="blog py-5">
+        <div class="container">
+            <div class="service-wrapper">
+                <div class="col-lg-8 offset-lg-2 px-5 mb-5">
+                    <h2 class="text-center">Blogs & Resources</h2>
+                </div>
+                <div class="found-wrapper">
+                    <a class="blog-item" href="#">
+                        <img src="/lib/images/blog/Frame 49268.png" alt="">
+                        <div class="row my-4">
+                            <div class="col-9 blog-text">
+                                <span>Top Ten Most Powerful Startup</span>
+                                <p>Top Ten Most Powerful Startup. Top Ten Most Powerful Startup. Top Ten Most Powerful
+                                    Startup</p>
+                            </div>
+                            <div class="col-3">
+                                <img src="/lib/images/blog/Frame 49275.png" alt="">
+                            </div>
+                        </div>
+                    </a>
+                    <a class="blog-item" href="#">
+                        <img src="/lib/images/blog/Frame 49269.png" alt="">
+                        <div class="row my-4">
+                            <div class="col-9 blog-text">
+                                <span>Top Ten Most Powerful Startup</span>
+                                <p>Top Ten Most Powerful Startup. Top Ten Most Powerful Startup. Top Ten Most Powerful
+                                    Startup</p>
+                            </div>
+                            <div class="col-3">
+                                <img src="/lib/images/blog/Frame 49275 (1).png" alt="">
+                            </div>
+                        </div>
+                    </a>
+                    <a class="blog-item" href="#">
+                        <img src="/lib/images/blog/Frame 49269.png" alt="">
+                        <div class="row my-4">
+                            <div class="col-9 blog-text">
+                                <span>Top Ten Most Powerful Startup</span>
+                                <p>Top Ten Most Powerful Startup. Top Ten Most Powerful Startup. Top Ten Most Powerful
+                                    Startup</p>
+                            </div>
+                            <div class="col-3">
+                                <img src="/lib/images/blog/Frame 49275 (2).png" alt="">
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <a href="#">See More Blogs & Resources<i class="fa fa-arrow-right ml-2"></i></a>
+            </div>
+        </div>
+    </section>
+    <!-- End Blog -->
+
+    <!-- Featured -->
+    <section class="feature">
+        <span>As Featured In</span>
+        <div class="owl-carousel">
+            <div class="row">
+                <div class="col-8">
+                    <img src="/lib/images/blog/Frame 49252.png" alt="">
+                </div>
+                <div class="col-4">
+                    <img class="my-4" src="/lib/images/blog/bujnews green (1).png" alt="">
+                    <div class="my-4">
+                        <span>SINC Partners invests over 200 million naira in 5 startups</span>
+                        <p>
+                            SINC Partners invests over 200 million naira in 5 startups. SINC Partners invests over
+                            200
+                            million naira in 5 startups SINC Partners invests over 200 million naira in ....</p>
+                    </div>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-8">
+                    <img src="/lib/images/blog/Frame 49252 (1).png" alt="">
+                </div>
+                <div class="col-4">
+                    <img class="my-4" src="/lib/images/blog/Ontecx-Logo-PNG-300x88 1 (4).png" alt="">
+                    <div class="my-4">
+                        <span>SINC Partners invests over 200 million naira in 5 startups</span>
+                        <p>
+                            SINC Partners invests over 200 million naira in 5 startups. SINC Partners invests over
+                            200
+                            million naira in 5 startups SINC Partners invests over 200 million naira in ....
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-8">
+                    <img src="/lib/images/blog/Frame 49252 (2).png" alt="">
+                </div>
+                <div class="col-4">
+                    <img class="my-4" src="/lib/images/blog/punch-newspaper-logo-1024x768.png" alt="">
+                    <div class="my-4">
+                        <span>SINC Partners invests over 200 million naira in 5 startups</span>
+                        <p>
+                            SINC Partners invests over 200 million naira in 5 startups. SINC Partners invests over
+                            200
+                            million naira in 5 startups SINC Partners invests over 200 million naira in ....
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="offset-lg-2 col-lg-8 my-4">Let's build companies that help everyone succeed</p>
+        <div class="d-flex justify-content-center">
+            <button class="btn btn-light rounded-pill mr-2">SINC with us</button>
+            <button class="btn btn-dark rounded-pill">Apply to SIP 1.0</button>
+        </div>
+    </section>
+    <!-- End Featured -->
+
     <script src="./lib/js/jquery.min.js"></script>
     <script src="./lib/js/bootstrap.min.js"></script>
     <script src="lib/js/owl.carousel.min.js"></script>
@@ -796,6 +912,16 @@
                 items: 1,
                 margin: 30,
                 dots: true,
+                nav: false,
+
+            });
+            $('.feature .owl-carousel').owlCarousel({
+                center: true,
+                loop: true,
+                autoplay: true,
+                items: 2,
+                margin: 30,
+                dots: false,
                 nav: false,
 
             });

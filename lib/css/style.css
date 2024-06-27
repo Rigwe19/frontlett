@@ -485,10 +485,6 @@ h6 {
   color: #ffffff;
   margin-bottom: 10px !important;
 }
-.owl-theme .owl-dots .owl-dot.active span,
-.owl-theme .owl-dots .owl-dot:hover span {
-  background: #ab2f52 !important;
-}
 .info-box {
   position: relative;
   padding-bottom: 30px;
@@ -601,7 +597,7 @@ h6 {
 }
 .owl-theme .owl-nav.disabled + .owl-dots {
   position: absolute;
-  width: 100%;
+  width: 96%;
   bottom: 20;
 }
 .owl-theme .owl-dots .owl-dot.active span,
@@ -675,6 +671,7 @@ h6 {
 }
 .focus-wrapper {
   display: grid;
+  row-gap: 10px;
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 @media (min-width: 768px) {
@@ -753,7 +750,7 @@ h6 {
   display: grid;
   column-gap: 10px;
   row-gap: 10px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 @media (min-width: 768px) {
   .portfolio-wrapper {
@@ -761,12 +758,15 @@ h6 {
     row-gap: 20px;
     grid-template-columns: repeat(8, minmax(0, 1fr));
   }
+  .portfolio-item {
+    width: 120px;
+  }
 }
 .portfolio-item {
   border-radius: 10px;
   background-color: #fff;
   padding: 10px 20px;
-  width: 120px;
+
   height: 60px;
   display: flex;
   justify-content: center;
@@ -981,12 +981,56 @@ h6 {
   font-weight: 500;
   margin-bottom: 8px;
 }
-.equity .service-wrapper a {
+.equity .service-wrapper a,
+.blog .service-wrapper a:not(.blog-item) {
   text-align: center;
   display: block;
   text-decoration: underline !important;
   font-weight: 600;
   margin-top: 30px;
   margin-bottom: 30px;
-  margin-top: 20px;
+}
+.blog .blog-text p {
+  font-size: 13px;
+}
+.blog .blog-text span {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.blog .blog-text + .col-4 > img {
+  width: 100px;
+}
+.feature .row .col-4 {
+  background-color: #fff;
+  margin-left: -15px;
+}
+.feature .row .col-4 img {
+  width: auto;
+}
+.feature .row .col-4 span {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 21px;
+}
+.feature .row .col-4 p {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19.6px;
+}
+.feature > span {
+  font-weight: 600;
+  display: block;
+  font-size: 24;
+  text-align: center;
+  margin-bottom: 30px;
+}
+.feature > p {
+  font-weight: 400;
+  font-size: 60px;
+  line-height: 104px;
+  text-align: center;
+}
+.feature .btn-light {
+  border: 1px solid #212121;
 }
