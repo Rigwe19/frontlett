@@ -3,6 +3,35 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-general: "General Sans";
+  --font-roboto: "Roboto";
+  --font-koho: "KoHo";
+  --font-amiko: "Amiko";
+  --font-segoe: "Segoe UI";
+  --font-proxima: 'Proxima Nova Rg', sans-serif;
+
+  /* --color-primary: #1279e0; */
+  --color-primary-light: #c8e2ff;
+
+  --color-border: #e8ecf4;
+  --color-input: #e8ecf4;
+  --color-ring: #0c0d12;
+  --color-background: #ffffff;
+  --color-foreground: #0c0d12;
+  --color-primary: #1279e0;
+  --color-primary-foreground: #f8fafc;
+  --color-secondary: #ffe499;
+  --color-secondary-foreground: #1c1f2a;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #f8fafc;
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+  --color-accent: #f1f5f9;
+  --color-accent-foreground: #1c1f2a;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0c0d12;
+  --color-card: #ffffff;
+  --color-card-foreground: #0c0d12;
 }
 
 html,
