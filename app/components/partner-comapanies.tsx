@@ -35,7 +35,7 @@ const PartnerCompanies: FC = () => {
         },
         {
             name: "Projaro",
-            logo: "/images/companies/decagon.png",
+            logo: "/images/companies/projaro.png",
             alt: "Projaro logo",
         },
         {
