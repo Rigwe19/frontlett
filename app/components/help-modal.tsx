@@ -124,7 +124,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ delayTime = 3000 }) => {
                                             transition: { delay: 0.4, duration: 0.4 },
                                         }}
                                     >
-                                        <Button className="w-full py-1">
+                                        <Button className="w-full">
                                             Request a callback
                                         </Button>
                                         <Button className="bg-white text-black w-full hover:bg-gray-200">
@@ -150,7 +150,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ delayTime = 3000 }) => {
                             </div>
                             {/* Illustration */}
                             <motion.div
-                                className="md:max-w-[360px] absolute -bottom-14 -right-16"
+                                className="md:max-w-[360px] absolute -bottom-14 -right-16 hidden md:block"
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{
                                     opacity: 1,

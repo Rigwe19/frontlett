@@ -19,11 +19,11 @@ const CTASection: React.FC = () => {
                                     Get Started Today
                                 </div>
 
-                                <h2 className="text-4xl md:text-5xl font-bold text-[#020817] mb-4 max-w-[674px]">
+                                <h2 className="text-2xl md:text-5xl font-bold text-[#020817] mb-4 max-w-[674px]">
                                     Ready to{" "}
-                                    <span className="after:bg-[#BAE0FD] relative after:absolute after:bottom-1 after:opacity-70 after:rotate-1 after:w-full after:h-3 after:left-1">
+                                    <span className="after:bg-[#BAE0FD] relative after:absolute after:bottom-1 after:opacity-70 after:rotate-1 after:w-full md:after:h-3 after:h-1.5 after:left-1">
                                         Transform
-                                    </span>
+                                    </span>{/**/}
                                     Your Company Workforce?
                                 </h2>
 
@@ -32,7 +32,7 @@ const CTASection: React.FC = () => {
                                     designed specifically for all teams like yours.
                                 </p>
 
-                                <div className="flex flex-row gap-4 mb-10">
+                                <div className="flex flex-col md:flex-row gap-4 mb-10">
                                     <a
                                         href="#"
                                         className="inline-flex items-center justify-center bg-blue-500 text-white px-8 py-3 rounded-lg font-medium transition-colors hover:bg-blue-600"
@@ -48,7 +48,7 @@ const CTASection: React.FC = () => {
                                     </a>
                                 </div>
 
-                                <div className="flex items-center">
+                                <div className="flex flex-col md:flex-row md:items-center">
                                     <div className="flex -space-x-2 mr-4">
                                         {/* {[1, 2, 3, 4].map((i) => (
                                             <div key={i} className="w-8 h-8 rounded-full border-2 border-white overflow-hidden">
@@ -78,7 +78,7 @@ const CTASection: React.FC = () => {
                             </div>
 
                             {/* Right image/background */}
-                            <div className="w-full aspect-square md:w-1/2 bg-gray-100">
+                            <div className="w-full aspect-[9_/_16] md:w-1/2 bg-gray-100">
                                 <div
                                     className="h-full w-full bg-cover bg-center opacity-20"
                                     style={{
