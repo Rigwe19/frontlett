@@ -27,12 +27,12 @@ const CTASection: React.FC = () => {
                                     Your Company Workforce?
                                 </h2>
 
-                                <p className="text-gray-600 text-lg mb-8 max-w-xl">
+                                <p className="md:text-gray-600 text-black/80 text-lg mb-8 max-w-xl">
                                     Join Frontlett Virtualizing today and experience the future of workforce management. Our platform is
                                     designed specifically for all teams like yours.
                                 </p>
 
-                                <div className="flex flex-col sm:flex-row gap-4 mb-10">
+                                <div className="flex flex-row gap-4 mb-10">
                                     <a
                                         href="#"
                                         className="inline-flex items-center justify-center bg-blue-500 text-white px-8 py-3 rounded-lg font-medium transition-colors hover:bg-blue-600"
@@ -78,7 +78,7 @@ const CTASection: React.FC = () => {
                             </div>
 
                             {/* Right image/background */}
-                            <div className="hidden md:block md:w-1/2 bg-gray-100">
+                            <div className="w-full aspect-square md:w-1/2 bg-gray-100">
                                 <div
                                     className="h-full w-full bg-cover bg-center opacity-20"
                                     style={{
