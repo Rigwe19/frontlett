@@ -132,7 +132,7 @@ const TeamMembers: React.FC = () => {
                                     <img
                                         src={member.image || "/placeholder.svg"}
                                         alt={member.name}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-full object-cover object-top"
                                     />
                                 </div>
 
@@ -173,39 +173,6 @@ const TeamMembers: React.FC = () => {
                             </div>
                         </SwiperSlide>)}
                     </Swiper>
-                    {/* <div className="flex justify-center">
-                        <div className={`flex gap-6 ${visibleCount === 1 ? "w-full max-w-md" : "w-full"}`}>
-                            <AnimatePresence initial={false} custom={direction} mode="wait">
-                                <motion.div
-                                    key={currentIndex}
-                                    custom={direction}
-                                    initial={{
-                                        opacity: 0,
-                                        x: direction > 0 ? 1000 : -1000,
-                                    }}
-                                    animate={{
-                                        opacity: 1,
-                                        x: 0,
-                                    }}
-                                    exit={{
-                                        opacity: 0,
-                                        x: direction < 0 ? 1000 : -1000,
-                                    }}
-                                    transition={{
-                                        x: { type: "spring", stiffness: 300, damping: 30 },
-                                        opacity: { duration: 0.2 },
-                                    }}
-                                    className="flex w-full"
-                                >
-                                    <div className={`flex gap-6 ${visibleCount === 1 ? "justify-center" : "justify-between"} w-full`}>
-                                        {teamMembers.slice(currentIndex, currentIndex + visibleCount).map((member) => (
-                                            
-                                        ))}
-                                    </div>
-                                </motion.div>
-                            </AnimatePresence>
-                        </div>
-                    </div> */}
 
                     <div className="flex justify-center items-center mt-12 space-x-2">
                         <button
