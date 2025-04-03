@@ -21,12 +21,13 @@ import Footer from "~/components/footer";
 import NewsletterSection from "~/components/newsletter-section";
 import CTASection from "~/components/cta-section";
 import HelpModal from "~/components/help-modal";
+import RequestDemo from "~/components/request-demo";
 
 export function Welcome() {
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans text-gray-800 antialiased">
       <Navbar />
-      <div className="flex-1 pt-[130px]">
+      <div className="flex-1 md:pt-[130px]">
         <HeroSection />
         <ClientShowcase />
         <AboutSection />
@@ -47,6 +48,7 @@ export function Welcome() {
         <FAQSection />
         <NewsletterSection />
         <CTASection />
+        <RequestDemo />
       </div>
       <Footer />
 

@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
+import { Link } from "react-router"
 
 const Navbar: React.FC = () => {
   const [featuresOpen, setFeaturesOpen] = useState(false)
@@ -9,7 +10,7 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="w-full h-[64px] bg-white border-b border-gray-200 fixed top-0 left-0 z-50">
-      <div className="max-w-7xl h-full w-full mx-auto flex items-center justify-between px-4 lg:px-6">
+      <div className="h-full w-full mx-auto flex items-center justify-between px-4 lg:px-6">
         {/* Logo */}
         <img src="./logo.png" className="h-[48px]" alt="" />
 
@@ -35,13 +36,28 @@ const Navbar: React.FC = () => {
             {featuresOpen && (
               <div className="absolute top-full left-0 w-48 bg-white rounded shadow-lg py-2 mt-2 z-10">
                 <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Feature 1
+                  Share Stafing
                 </a>
                 <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Feature 2
+                  Job Sharing
                 </a>
                 <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Feature 3
+                  HR Account Officer
+                </a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Reward System
+                </a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Hire Fulltime
+                </a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Move to Virtualting
+                </a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Virtualancer
+                </a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Moonlighting
                 </a>
               </div>
             )}
@@ -69,13 +85,28 @@ const Navbar: React.FC = () => {
             {solutionsOpen && (
               <div className="absolute top-full left-0 w-48 bg-white rounded shadow-lg py-2 mt-2 z-10">
                 <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Solution 1
+                  Startup
                 </a>
                 <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Solution 2
+                  Retail
                 </a>
                 <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Solution 3
+                  Real Estate
+                </a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Hospitality
+                </a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Beauty & Cosmetics
+                </a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Manufacturing
+                </a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Blue Collar
+                </a>
+                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Corporation & Gov
                 </a>
               </div>
             )}
@@ -88,15 +119,15 @@ const Navbar: React.FC = () => {
 
         {/* Buttons */}
         <div className="flex items-center space-x-3">
-          <button className="hidden md:block bg-primary-light text-gray-800 px-4 py-2 rounded text-xs font-semibold whitespace-nowrap">
+          <button className="text-sm hidden md:flex w-[120px] h-[42px] justify-center items-center gap-[4px] rounded-[12px] bg-[#C8E2FF]">
             GET A WORK DATA -ID
           </button>
-          <button className="hidden md:block bg-secondary text-gray-800 px-4 py-2 rounded text-xs font-semibold whitespace-nowrap">
+          <button className="text-sm hidden md:flex w-[100px] h-[42px] justify-center items-center gap-[4px] rounded-[12px] bg-[#FFEEC8]">
             PITCH DECK
           </button>
-          <button className="bg-primary text-white px-4 py-2 rounded text-xs font-semibold whitespace-nowrap">
+          <Link to="/onboarding/get-started" className="text-sm text-white font-bold flex w-[130px] h-[43px] p-[11px] justify-center items-center gap-[10px] rounded-[12px] bg-[#1279E0]">
             Login/Register
-          </button>
+          </Link>
 
           {/* Mobile menu button */}
           <button className="md:hidden flex flex-col justify-between w-6 h-5">
