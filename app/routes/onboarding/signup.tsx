@@ -33,19 +33,28 @@ type Inputs = {
     full_name: string,
     phone_number: string,
     email: string,
-    invite_code: string,
+    invite_code?: string,
     password: string,
     role: string
 }
 const schema = yup
     .object({
         full_name: yup.string().required(),
-        phone_number: yup.string().min(11).max(13).required(),
+        phone_number: yup.string().matches(/^0\d{10}$/, {
+            message: "phone number must be numbers of 11 characters"
+        }).length(11).required(),
         password: yup.string().required().min(8),
         email: yup.string().email().required(),
-        invite_code: yup.string().required(),
+        invite_code: yup.string().optional(),
         // confirm: yup.string().oneOf([yup.ref('password')], 'Passwords must match'),
         role: yup.string().required(),
+    })
+    .required()
+const numSchema = yup
+    .object({
+        phone_number: yup.string().matches(/^0\d{10}$/, {
+            message: "phone number must be numbers of 11 characters"
+        }).length(11).required(),
     })
     .required()
 
@@ -54,14 +63,25 @@ const Signup = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [phoneNumber, setPhoneNumber] = useState('');
     const [showModal, setShowModal] = useState(false);
-    const { register: RG, invite_code, google } = useAuth();
-    const { formState: { errors }, register, handleSubmit, watch } = useForm({
+    const [vError, setVError] = useState({
+        phone: ''
+    });
+    const { register: RG, invite_code, google, updateNumber } = useAuth();
+    const { formState: { errors }, register, handleSubmit } = useForm({
         resolver: yupResolver(schema),
         defaultValues: {
             role: searchParams.get('option') ?? 'employee',
             invite_code,
         }
     });
+
+    const form = useForm({
+        resolver: yupResolver(numSchema),
+        defaultValues: {
+            phone_number: ''
+        }
+    });
+
     const [sErrors, setSErrors] = useState<FormErrors>({
         full_name: undefined,
         username: undefined,
@@ -71,27 +91,28 @@ const Signup = () => {
         location: undefined,
         confirm: undefined
     });
-
+    // console.log(form.watch())
     useEffect(() => {
         const googleCode = searchParams.get("code");
         const state = searchParams.get('state');
         if (googleCode) {
             google({ code: googleCode, mode: "register", redirectUrl: location.origin + location.pathname, state })
-            //     await post("http://localhost:8000/api/auth/google/callback", { code: googleCode, mode: "register" })
-            .then((res) => {
-                navigate("/dashboard/profile"); // Redirect after registration
-            })
+                //     await post("http://localhost:8000/api/auth/google/callback", { code: googleCode, mode: "register" })
+                .then((res) => {
+                    navigate("/onboarding/verify"); // Redirect after registration
+                })
             //         .catch(() => console.error("Google register error"));
         }
     }, [searchParams, navigate]);
 
     const onSubmit = async (form: Inputs) => {
+        updateNumber(form.phone_number)
         try {
             await RG(form)
                 .then(success => {
                     // const {success} = res;
                     if (success) {
-                        navigate('onboarding/verify')
+                        navigate('/onboarding/verify')
                     }
                 })
         } catch (error: any) {
@@ -102,19 +123,29 @@ const Signup = () => {
     const handleGoogleAuth = async () => {
         setShowModal(true)
     }
-    const handlePhoneSubmit = async () => {
-        setShowModal(false)
+    const handlePhoneSubmit = async (form: { phone_number: string }) => {
+        updateNumber(form.phone_number)
         const role = searchParams.get('option') ?? 'employee';
         await get<{ success: boolean, url: string }>('/auth/google', {
             redirectUrl: `${location.origin + location.pathname}`,
             mode: 'signup',
-            role, invite_code, phone: phoneNumber
+            role, invite_code, phone: form.phone_number
         })
             .then(res => {
                 const { success, url } = res.data;
                 if (success) {
+                    setShowModal(false)
                     window.location.href = url;
                     // console.log(url);
+                }
+            }).catch(e => {
+                if (e.status === 422) {
+                    const validationErrors: FormErrors = {};
+                    for (const err in e.validationErrors) {
+                        validationErrors[err] = e.validationErrors[err][0];
+                    }
+                    console.log(validationErrors)
+                    setVError({ phone: validationErrors.phone ?? '' })
                 }
             })
         // window.location.href = `http://localhost:8000/auth/google?role=${role}&invite_code=${invite_code}&phone=${phoneNumber}`;
@@ -141,10 +172,10 @@ const Signup = () => {
                     <p className="leading-6 text-[#6B7280] dark:text-neutral-300">Join as a virtualt and start your journey.</p>
                 </div>
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full">
-                    <Input {...register("full_name")} error={sErrors.full_name ?? errors.full_name?.message} inputMode='text' autoComplete='name webauthn' icon={LuUserPen} type="text" placeholder="James Bond" label="Full Name" />
+                    <Input {...register("full_name")} error={sErrors.full_name ?? errors.full_name?.message} inputMode='text' autoComplete='name webauthn' icon={LuUserPen} type="text" placeholder="Tunde Amos" label="Full Name" />
                     <Input {...register("email")} error={sErrors.email ?? errors.email?.message} inputMode='email' autoComplete='name webauthn' icon={LuMail} type="email" placeholder="youremail@mail.com" label="Email" />
-                    <Input {...register("invite_code")} error={sErrors.invite_code ?? errors.invite_code?.message} disabled={!!invite_code} inputMode='url' icon={LuLink} type="text" placeholder="frontlett.invite/20345" info={<><span>An invite link is required to join as a resource.</span> <Link className="text-primary" to="">Request Invite Code</Link></>} label="Invite Link" />
-                    <Input {...register("phone_number")} error={sErrors.phone_number ?? errors.phone_number?.message} inputMode='numeric' autoComplete='mobile tel' icon={LuPhone} type="text" placeholder="+234 123 456 789" label="Phone Number (For OTP)" />
+                    <Input {...register("invite_code")} error={sErrors.invite_code ?? errors.invite_code?.message} disabled={!!invite_code} inputMode='url' icon={LuLink} type="text" placeholder="6udie9" info={<><span>An invite link is required to join as a resource.</span> <Link className="text-primary" to="">Request Invite Code</Link></>} label="Invite Link" />
+                    <Input {...register("phone_number")} error={sErrors.phone_number ?? errors.phone_number?.message} inputMode='numeric' autoComplete='mobile tel' icon={LuPhone} type="text" placeholder="0902 123 6789" label="Phone Number (For OTP)" />
                     <Input {...register("password")} error={sErrors.password ?? errors.password?.message} inputMode='text' autoComplete='new-password webauthn' icon={RiLockPasswordLine} type='password' placeholder="Create a strong password" label="Password" />
                     <div className="flex flex-col gap-2.5 items-center w-full">
                         <Button className="w-full">Continue</Button>
@@ -192,18 +223,25 @@ const Signup = () => {
                         >
                             ✕
                         </button>
-                        <h3 className="text-lg font-semibold">Enter Phone Number</h3>
-                        <Input
-                            icon={LuPhone}
-                            type="tel"
-                            placeholder="+234 123 456 789"
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                            className=""
-                        />
-                        <Button onClick={handlePhoneSubmit} className="w-full">
-                            Submit Phone Number
-                        </Button>
+                        <form onSubmit={form.handleSubmit(handlePhoneSubmit)} className="flex flex-col gap-4 w-full">
+                            <Input
+                                icon={LuPhone}
+                                type="tel"
+                                placeholder="0902 4586 789"
+                                label="Enter Phone Number"
+                                error={vError.phone ?? errors.phone_number?.message}
+                                inputMode='numeric'
+                                autoComplete='mobile tel'
+                                // value={phoneNumber}
+                                // onChange={(e) => setPhoneNumber(e.target.value)}
+                                className=""
+                                {...form.register('phone_number')}
+                            />
+                            <Button className="w-full">
+                                Submit Phone Number
+                            </Button>
+                        </form>
+
                     </motion.div>
                 </AnimatePresence>
 

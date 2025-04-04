@@ -22,6 +22,8 @@ interface UseAuthStore {
   updateToken: (token: string) => void;
   invite_code: string;
   updateCode: (code: string) => void;
+  number: string;
+  updateNumber: (code: string) => void;
   signIn: (form: { email: string; password: string }) => Promise<any>;
   fetchCurrentUser: () => Promise<void>;
   register: (details: any) => Promise<any>;
@@ -56,6 +58,8 @@ const useAuth = create<UseAuthStore>()(
       updateToken: (token: string) => set({ token }),
       invite_code: "",
       updateCode: (code: any) => set({ invite_code: code }),
+      number: "",
+      updateNumber: (number: any) => set({ number: number }),
       signIn: async (form: {
         email: string;
         password: string;
@@ -166,6 +170,7 @@ const useAuth = create<UseAuthStore>()(
       partialize: (state: UseAuthStore) => ({
         token: state.token,
         user: state.user,
+        number: state.number,
         // isActivated: state.isActivated,
       }),
       storage: createJSONStorage(() => sessionStorage),
