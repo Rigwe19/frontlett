@@ -11,6 +11,8 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import { useLoader } from "./stores/loaderStore";
 import Loader from "./components/dashboard/loader";
+import { GoogleOAuthProvider } from '@react-oauth/google'
+import Alert from "./components/dashboard/alert";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -48,13 +50,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+          {children}
+          <div id="portal-root"></div>
+          <Loader show={isLoading} />
+          <Alert />
+        </GoogleOAuthProvider>
         <ScrollRestoration />
-        <Loader show={isLoading} />
         <Scripts />
       </body>
     </html>
   );
+}
+
+export function HydrateFallback() {
+  const { isLoading } = useLoader();
+  return <Loader show={!isLoading} />
 }
 
 export default function App() {

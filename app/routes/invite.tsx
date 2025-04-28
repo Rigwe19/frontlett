@@ -15,7 +15,7 @@ const Invite = () => {
     }, []);
 
     return (
-        <Navigate to={'/onboarding/option'} />
+        <Navigate to={'/onboarding/get-started'} />
     )
 }
 

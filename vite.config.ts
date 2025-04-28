@@ -11,4 +11,9 @@ export default defineConfig({
       "~": path.resolve(__dirname, "./app"),
     },
   },
+  build: {
+    commonjsOptions: {
+      transformMixedEsModules: true
+    },
+  },
 });

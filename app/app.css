@@ -45,7 +45,12 @@ body {
 button {
   @apply cursor-pointer;
 }
-
+.ql-tooltip {
+  left: 0 !important;
+}
+.ql-blank::before {
+  @apply !text-neutral-500 dark:!text-neutral-400 font-general text-base;
+}
 .loader {
   width: 8px;
   height: 8px;

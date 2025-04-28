@@ -5,20 +5,27 @@ import Card from '~/components/dashboard/card'
 type Props = {}
 const options = [{
     icon: LuBriefcase,
-    title: 'Employee',
-    description: 'Skilled professionals for short- term or project-based work.',
-    to: '/onboarding/signup'
+    title: 'Employee Resource',
+    query: 'employee',
+    description: 'Work for multiple companies 2 hours per day or 1 day per week.',
+    to: '/onboarding/signup',
+    disabled: false,
 },{
     icon: LuGraduationCap,
-    title: 'Advisor',
-    description: 'Consultants and mentors for specialized guidance.',
-    to: '/onboarding/signup'
+    title: 'Advisor Resource',
+    query: 'advisor',
+    description: 'Consult and mentor companies on a shared time basis.',
+    to: '/onboarding/signup',
+    disabled: true,
 },{
     icon: LuMegaphone,
-    title: 'Influencer',
-    description: 'Content creators and brand ambassadors.',
-    to: '/onboarding/signup'
-},]
+    title: 'Influencer Resource',
+    query: 'influencer',
+    description: 'Influence business to success with semi-dedicated sales drive.',
+    to: '/onboarding/signup',
+    disabled: true,
+},
+]
 const Option = (props: Props) => {
     const [active, setActive] = useState(-1);
     return (

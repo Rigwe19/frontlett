@@ -1,0 +1,344 @@
+import { yupResolver } from '@hookform/resolvers/yup'
+import { capital, title } from 'case'
+import { useRef, useState, type ChangeEvent, type DragEvent } from 'react'
+import { useForm } from 'react-hook-form'
+import { LuCirclePlus, LuUpload, LuX } from 'react-icons/lu'
+import { useNavigate } from 'react-router'
+import * as yup from "yup"
+import Input from '~/components/dashboard/input'
+import SearchInput from '~/components/dashboard/search-input'
+import Select from '~/components/dashboard/select'
+import Skills from '~/components/dashboard/skills'
+import Button from '~/components/ui/button'
+import { post } from '~/libs/axios'
+import { courses, schools, type School } from '~/libs/schools'
+import useAuth from '~/stores/authStore'
+
+type Props = {}
+type Form = {
+    name: string;
+    file: File,
+    type: 'nysc' | 'degree' | 'resume';
+}
+const data = [{
+    label: 'Resume',
+    value: 'resume'
+}, {
+    label: 'NYSC Certificate',
+    value: 'nysc'
+}, {
+    label: 'Degree Certificate',
+    value: 'degree'
+}]
+const details = (props: Props) => {
+    const [active, setActive] = useState<'education' | 'experience' | 'roles'>('education');
+    const navigate = useNavigate()
+    const { updateStep } = useAuth();
+    const inputRef = useRef<HTMLInputElement>(null)
+    const [dragging, setDragging] = useState(false);
+    const [files, setFiles] = useState<File[]>([]);
+    const [error, setError] = useState('');
+    const [type, setType] = useState<any>('');
+    const [form, setForm] = useState<any>()
+    const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        setDragging(true)
+    }
+    const handleDragLeave = () => {
+        setDragging(false)
+    }
+    const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+        e.preventDefault()
+        setDragging(false)
+        const file = e.dataTransfer.files.item(0);
+        // const is_valid = file?.type === 'application/pdf' || file?.type === ''
+        setForm((pv: any) => ({
+            ...pv, [type]: {
+                type: type,
+                file: file,
+                name: file?.name
+            }
+        }))
+        setType('')
+        // const fileArray: File[] = Array.from(droppedFiles).map(file => file);
+        // const validFiles = fileArray.filter(file => file.type === 'application/pdf' || file.type.startsWith('image/'))
+        // if (validFiles.length !== fileArray.length) {
+        //     setError('Only PDF and images are allowed')
+        // } else {
+        //     setError('')
+        // }
+        // const uniqueFiles = [...files, ...validFiles].filter((file, index, self) => index === self.findIndex(f => f.name === file.name))
+        // setFiles(uniqueFiles);
+        // console.log(uniqueFiles)
+        // props?.onChange && props?.onChange(uniqueFiles)
+    }
+
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.item(0);
+        if (file) {
+
+            setForm((pv: any) => ({
+                ...pv, [type]: {
+                    type: type,
+                    file: file,
+                    name: file.name
+                }
+            }))
+            setType('')
+            // const fileArray: File[] = Array.from(selectedFiles).map(file => file);
+            // const validFiles = fileArray.filter(file => file.type === 'application/pdf' || file.type.startsWith('image/'))
+            // if (validFiles.length !== fileArray.length) {
+            //     setError('Only PDF and images are allowed')
+            // } else {
+            //     setError('')
+            // }
+            // const uniqueFiles = [...files, ...validFiles].filter((file, index, self) => index === self.findIndex(f => f.name === file.name))
+            // setFiles(uniqueFiles);
+            // props?.onChange && props?.onChange(uniqueFiles)
+        }
+    }
+    const handleUpload = async () => {
+        // if()
+        const fd = new FormData();
+        fd.append('nysc', form.nysc.file)
+        fd.append('degree', form.degree.file)
+        fd.append('resume', form.resume.file)
+        await post<any, { success: boolean }>('/profile/upload/documents', fd, true)
+            .then(res => {
+                const { success } = res.data;
+                if (success) {
+                    console.log(res)
+                }
+            })
+
+    }
+
+    const handleNext = async() => {
+      await post<any, {success: boolean; step: number}>('/profile/pro-details/next', {})
+      .then(res=> {
+        const {success, step} = res.data
+        if(success){
+            updateStep(step)
+            navigate('/dashboard/complete-profile/portfolio');
+        }
+            
+      })
+    }
+    
+
+    return (
+        <div className="flex flex-col gap-8 max-w-5xl">
+            <div className="flex justify-between flex-col md:flex-row">
+                <div className="flex w-full flex-col items-start gap-[24px] max-w-md">
+                    <h2 className="self-stretch text-[#0F1729] dark:text-neutral-200 text-[16px] font-bold">Upload Resume</h2>
+                    <Select onChange={e => setType(e.target.value)} label="Document Type" placeholder="Select Document Type" data={data} />
+                    {type && <div
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                        onClick={() => inputRef.current?.click()}
+                        className="flex h-[205px] flex-col justify-center items-center gap-[16px] self-stretch rounded-[12px] border dark:border-neutral-500 bg-[#FFF] dark:bg-neutral-700">
+                        <div className="flex flex-col items-center gap-[16px] self-stretch">
+                            <div className="flex flex-col justify-center items-center gap-[4px] self-stretch">
+                                <LuUpload size={24} />
+                                <div className="flex flex-col justify-center items-center gap-[16px] self-stretch">
+                                    <div className="flex flex-col justify-center items-center gap-[8px] self-stretch">
+                                        <h2 className="self-stretch text-[#020817] dark:text-neutral-300 text-center text-[17px] font-bold">Upload your {capital(type)}</h2>
+                                        <p className="self-stretch text-[#6B7280] dark:text-neutral-400 text-center text-[14px]">Drag and drop your {capital(type)} here, or click to select</p>
+                                    </div>
+                                    <input ref={inputRef} accept=".docx,.doc,.pdf" type="file" className="hidden" onChange={handleFileChange} />
+                                </div>
+                            </div>
+                            <span className="self-stretch text-[#9CA3AF] dark:text-neutral-400 text-center text-[12px]">Max file size: 10MB (PDF or DOCX)</span>
+                        </div>
+                    </div>}
+                    {form !== undefined && <div className="flex flex-col gap-2 w-full">
+                        {Object.entries(form).map((entry: any[]) => <div key={entry[0]} className="w-full flex justify-between items-center px-2 rounded-lg bg-[#F1F5F9] dark:bg-neutral-700 border dark:border-neutral-500">
+                            <div className="flex flex-col">
+                                <p className="text-[#0F1729] dark:text-neutral-300 leading-6">{entry[1].name}</p>
+                                <span className="text-[#9CA3AF] dark:text-neutral-400 text-sm">{entry[1].type}</span>
+                            </div>
+                            <LuX size={28} />
+                        </div>)}
+                    </div>}
+                    {/* <pre>{JSON.stringify(form, null, 2)}</pre> */}
+                    <Button onClick={handleUpload} type="button">Upload Files</Button>
+                </div>
+                <hr className="bg-red-500 border-r h-[350px] dark:border-neutral-500 md:block hidden" />
+                <div className="flex flex-col items-start gap-[24px] max-w-md">
+                    <h2 className="self-stretch text-[#0F1729] dark:text-neutral-300 text-[16px] font-bold">Manually input details</h2>
+                    <div className="flex flex-col items-end gap-[14px] self-stretch">
+                        <div className="flex p-[4px] items-start self-stretch rounded-[6px] bg-[#F1F5F9] dark:bg-neutral-700">
+                            <button onClick={() => setActive('education')} className={`flex p-[6px] justify-center items-center gap-[10px] w-1/3 rounded-[4px] ${active === 'education' ? 'bg-[#FFF] dark:bg-neutral-600' : ''} text-center text-[14px] font-medium`}>Education</button>
+                            <button onClick={() => setActive('experience')} className={`flex p-[6px] justify-center items-center gap-[10px] w-1/3 rounded-[4px] ${active === 'experience' ? 'bg-[#FFF] dark:bg-neutral-600' : ''} text-center text-[13px] font-medium`}>Experience</button>
+                            <button onClick={() => setActive('roles')} className={`flex p-[6px] justify-center items-center gap-[10px] w-1/3 rounded-[4px] ${active === 'roles' ? 'bg-[#FFF] dark:bg-neutral-600' : ''} text-center text-[14px] font-medium`}>Roles & Skills</button>
+                        </div>
+                        <div className="flex flex-col gap-[15px] w-full">
+                            {active === 'education' && <Education />}
+                            {active === 'experience' && <Experience />}
+                            {active === 'roles' && <Roles />}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <Button onClick={handleNext} className="self-end">Next: Portfolio</Button>
+        </div>
+    )
+}
+interface FormErrors {
+    [key: string]: string | undefined;
+}
+
+type Inputs = {
+    professional_headline: string,
+    about: string
+    // email: string,
+}
+interface Image {
+    type?: string;
+    src: string;
+}
+const edu = yup
+    .object({
+        degree: yup.string().required(),
+        institution: yup.string().required(),
+        started_at: yup.string().required(),
+        ended_at: yup.string().required(),
+    })
+    .required()
+function Education() {
+    const { formState: { errors }, register, handleSubmit, setValue, reset } = useForm({
+        resolver: yupResolver(edu),
+        defaultValues: {
+            degree: '',
+            institution: '',
+            started_at: '',
+            ended_at: ''
+        }
+    });
+    const onSubmit = async (form: any) => {
+
+        try {
+            await post<FormData, { success: boolean; result: any }>('profile/pro-details', { ...form, type: 'education' })
+                .then(res => {
+                    const { success, result } = res.data;
+                    if (success) {
+                        console.log(result)
+                        reset()
+                    }
+                })
+            // navigate('/dashboard/home');
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+    const sch = schools.map((school: School) => school.name)
+    const coursess = courses.map(course => title(course))
+    return (
+        <form className="flex flex-col gap-[15px]" onSubmit={handleSubmit(onSubmit)}>
+            <SearchInput options={coursess} onChange={e => setValue('degree', e)} error={errors?.degree?.message} placeholder="Degree" />
+            <SearchInput options={sch} onChange={e => setValue('institution', e)} error={errors?.institution?.message} placeholder="Institution" />
+            <div className="flex md:gap-[29px] gap-[15px] w-full flex-col md:flex-row">
+                <Input {...register('started_at')} error={errors?.started_at?.message} type="date" className="w-full" placeholder="mm/dd/yy" />
+                <Input {...register('ended_at')} error={errors?.ended_at?.message} type="date" className="w-full" placeholder="mm/dd/yy" />
+            </div>
+            <Button className="w-full">
+                <LuCirclePlus />
+                Add Education
+            </Button>
+        </form>
+    )
+}
+const exp = yup
+    .object({
+        title: yup.string().required(),
+        company: yup.string().required(),
+        started_at: yup.string().required(),
+        ended_at: yup.string().required(),
+        is_present: yup.boolean().default(false)
+    })
+    .required()
+function Experience() {
+    const { formState: { errors }, register, handleSubmit, reset } = useForm({
+        resolver: yupResolver(exp),
+        defaultValues: {
+            title: '',
+            company: '',
+            started_at: '',
+            ended_at: '',
+            is_present: false
+        }
+    });
+    const onSubmit = async (form: any) => {
+
+        try {
+            await post<FormData, { success: boolean; step: number }>('profile/pro-details', { ...form, type: 'experience' })
+                .then(res => {
+                    const { success, step } = res.data;
+                    if (success) {
+                        reset()
+                    }
+                })
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+    return (
+        <form className="flex flex-col gap-[15px]" onSubmit={handleSubmit(onSubmit)}>
+            <Input {...register('title')} error={errors?.title?.message} placeholder="Job Title" />
+            <Input {...register('company')} error={errors?.company?.message} placeholder="Company" />
+            <input {...register('is_present')} type="checkbox" className="w-8 h-8" />
+            <div className="flex gap-[29px] w-full flex-col md:flex-row">
+                <Input {...register('started_at')} error={errors?.started_at?.message} type="date" className="w-full" placeholder="mm/dd/yy" />
+                <Input {...register('ended_at')} error={errors?.ended_at?.message} type="date" className="w-full" placeholder="mm/dd/yy" />
+            </div>
+            <Button className="w-full">
+                <LuCirclePlus />
+                Add Experience
+            </Button>
+        </form>
+    )
+}
+
+const rol = yup
+    .object({
+        role: yup.string().required(),
+        skills: yup.array().required(),
+    })
+    .required()
+function Roles() {
+    const { formState: { errors }, register, handleSubmit, setValue, watch, reset } = useForm({
+        resolver: yupResolver(rol),
+        defaultValues: {
+            role: '',
+            skills: [],
+        }
+    });
+    const onSubmit = async (form: any) => {
+
+        try {
+            await post<FormData, { success: boolean; step: number }>('profile/pro-details', { ...form, type: 'roles' })
+                .then(res => {
+                    const { success } = res.data;
+                    if (success) {
+                        reset()
+                    }
+                })
+            // navigate('/dashboard/home');
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+    return (
+        <form className="flex flex-col gap-[15px]" onSubmit={handleSubmit(onSubmit)}>
+            <Input {...register('role')} error={errors?.role?.message} placeholder="Type Your Role" />
+            <Skills value={watch('skills')} onSave={e => setValue('skills', e)} placeholder="Add Skills......." info={<span>Add skills that are essential for the job</span>} label="Required Skills" />
+            <Button className="w-full">
+                <LuCirclePlus />
+                Save
+            </Button>
+        </form>
+    )
+}
+
+export default details

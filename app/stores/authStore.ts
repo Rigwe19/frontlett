@@ -8,13 +8,31 @@ type User = {
   email: string;
   id: string;
   full_name: string;
-  // username: string;
+  referral_code: string;
+  username: string;
   phone_number: string;
-  // location: string;
-  role: "employee" | "employer" | "admin" | "adviser" | "influencer";
+  location?: string;
+  company_name?: string;
+  invited_count: number;
+  invite_tokens: number;
+  role: "employee" | "business" | "admin" | "adviser" | "influencer";
   // linkedIn: string;
-  createdAt: string;
+  created_at: string;
+  profile: Profile
+  percentage_completed: number
 };
+
+interface Profile {
+  profile_picture: string;
+  about: string;
+  professional_headline: string;
+  availability: any;
+  roles: string[];
+  skills: string[];
+  rate: number;
+  is_completed: boolean;
+  steps: number
+}
 
 interface UseAuthStore {
   user: User | null;
@@ -23,13 +41,16 @@ interface UseAuthStore {
   invite_code: string;
   updateCode: (code: string) => void;
   number: string;
+  step: number;
+  updateStep: (step:number) => void;
   updateNumber: (code: string) => void;
   signIn: (form: { email: string; password: string }) => Promise<any>;
   fetchCurrentUser: () => Promise<void>;
   register: (details: any) => Promise<any>;
   updateUser: (user: any) => void;
   logout: () => Promise<void>;
-  google: (state: {code: string, mode: 'register' | 'login', redirectUrl: string, state?: string|null}, details?: any) => Promise<void>;
+  // google: (state: {code: string, mode: 'register' | 'login', redirectUrl: string, state?: string|null}, details?: any) => Promise<void>;
+  google: (details?: any) => Promise<{success: boolean; url: string}>;
 }
 interface AuthResponse {
   code: number;
@@ -60,6 +81,8 @@ const useAuth = create<UseAuthStore>()(
       updateCode: (code: any) => set({ invite_code: code }),
       number: "",
       updateNumber: (number: any) => set({ number: number }),
+      step: 0,
+      updateStep: (number: any) => set({ step: number }),
       signIn: async (form: {
         email: string;
         password: string;
@@ -70,10 +93,10 @@ const useAuth = create<UseAuthStore>()(
             password: form.password,
           });
 
-          const userData = response.data;
-          console.log(response.data);
+          // const userData = response.data;
+          // console.log(response.data);
           set({ token: response.data.token });
-          console.log("SETUP", { user: response.data.user });
+          // console.log("SETUP", { user: response.data.user });
           return Promise.resolve(response.data.success);
         } catch (error: any) {
           if (error.status === 422) {
@@ -141,10 +164,10 @@ const useAuth = create<UseAuthStore>()(
           // Handle authentication errors
         }
       },
-      google: async (state, details) => {
+      google: async (details) => {
         try {
-          const response: AxiosResponse = await get("/auth/google/callback", { ...state, ...details })
-          // post(`/auth/register`, details);
+          // const response: AxiosResponse = await get("/auth/google/callback", { ...state, ...details })
+          const response: AxiosResponse = await post(`/auth/google/callback`, details);
 
           // const userData = response.data.data;
 

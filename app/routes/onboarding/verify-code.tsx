@@ -5,16 +5,25 @@ import OtpInput, { type InputProps } from 'react-otp-input'
 import Button from '~/components/ui/button'
 import { post } from '~/libs/axios'
 import type { AxiosResponse } from 'axios'
-import useAuth from '~/stores/authStore'
+import useAuth, { getAuthState } from "~/stores/authStore"
+import type { Route } from './+types/verify-code'
 
 // interface ValidationError {
 //     field: string;
 //     message: string;
 //   }
-  
-  interface FormErrors {
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+    const authState = getAuthState();
+    const number = authState.number
+    await post('/auth/otp/send', {
+        phone: number,
+    })
+    return {
+    }
+}
+interface FormErrors {
     [key: string]: string;
-  }
+}
 const VerifyCode = () => {
     const navigate = useNavigate()
     const [otp, setOtp] = useState('');
@@ -37,10 +46,11 @@ const VerifyCode = () => {
                 }
             })
         }, 1000)
+
         return () => {
             clearInterval(interval)
         }
-    }, []);
+    }, [completed]);
 
     const handleResend = async () => {
         try {
@@ -73,18 +83,23 @@ const VerifyCode = () => {
                 code: otp,
                 phone: number,
             })
-            const { success } = response.data;
+            const { success, role } = response.data;
             if (success) {
-                navigate('/dashboard/profile')
+                if (role === 'business') {
+                    navigate('/onboarding/company-verification')
+                } else {
+                    navigate('/dashboard')
+                }
+
             }
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.status === 422) {
                 const validationErrors: FormErrors = {};
                 for (const err in error.validationErrors) {
-                  validationErrors[err] = error.validationErrors[err][0];
+                    validationErrors[err] = error.validationErrors[err][0];
                 }
                 setError(validationErrors.code)
-              }
+            }
         }
 
     }

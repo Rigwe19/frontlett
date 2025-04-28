@@ -13,9 +13,9 @@ const GetStarted = (props: Props) => {
             <div className="flex flex-col w-7/10 justify-center items-center gap-8">
                 <img src="/logo.png" alt="" className="w-[106px] dark:hidden" />
                 <img src="/logo-white.svg" alt="" className="w-[106px] hidden dark:block" />
-                <h2 className="font-bold text-2xl leading-8">Join our talent network</h2>
+                <h2 className="font-bold text-2xl leading-8">Join the World's 1st Staff & Work Share Platform</h2>
                 <Button to="/onboarding/option" className='font-general w-full'>Join as Resource</Button>
-                <Button outline className='font-general w-full'>I'm a Business</Button>
+                <Button to="/onboarding/signup?option=business" outline className='font-general w-full'>I'm a Business</Button>
                 <p className="text-sm leading-5">
                     Already have an account?{" "}
                     <Link to="/onboarding/signin" className="text-primary">Log in</Link>

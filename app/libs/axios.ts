@@ -74,9 +74,10 @@ const handleRequestError = (error: AxiosError<ErrorResponse>, url: string) => {
         const validationError = new Error('Validation Failed');
         (validationError as any).validationErrors = validationErrors;
         (validationError as any).status = error.response.status;
+        useLoader.getState().alert(message ?? `Error while accessing ${url}`, 5000, "error");
         return Promise.reject(validationError);
     } else {
-        notification(message ?? `Error while accessing ${url}`, "error");
+        useLoader.getState().alert(message ?? `Error while accessing ${url}`, 5000, "error");
     }
 
     return Promise.reject(error);
@@ -97,12 +98,14 @@ export const get = async <TResponse>(url: string, params?: any): Promise<AxiosRe
 
 export const post = async <TRequest, TResponse>(
     url: string,
-    data?: TRequest
+    data?: TRequest,
+    id_formdata: boolean = false
 ): Promise<AxiosResponse<TResponse>> => {
     try {
         return await axiosInstance.post<TResponse>(url, data ?? {}, {
             headers: {
                 Authorization: getAuthHeader(),
+                "Content-Type": id_formdata ? "multipart/form-data" : "application/json",
             },
         });
     } catch (error) {
