@@ -1,10 +1,17 @@
 import { useEffect } from 'react'
 import { FaCheck, FaEnvelope } from 'react-icons/fa6'
 import { Navigate, Outlet, useSearchParams, useNavigate } from 'react-router'
-import useAuth from '~/stores/authStore'
+import useAuth, { getAuthState } from '~/stores/authStore'
+import type { Route } from './+types'
 
 type Props = {}
 
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+    // const authState = getAuthState();
+    // await authState.updateUser(null)
+    return {
+    }
+}
 const Onboarding = (props: Props) => {
     const { token } = useAuth()
     const navigate = useNavigate()
@@ -14,14 +21,18 @@ const Onboarding = (props: Props) => {
         if(searchParams.get('option') === 'business') return true;
         return false;
     } 
-    useEffect(() => {
-        if (location.pathname === '/onboarding' || location.pathname === '/onboarding/') {
-            navigate('/onboarding/get-started', { replace: true })
-        }
-        if (['verify', 'company-verification'].includes(location.pathname) && token) {
-            navigate('/dashboard/profile', { replace: true })
-        }
-    }, []);
+    // useEffect(() => {
+    //     if () {
+    //         navigate('/dashboard/profile', { replace: true })
+    //     }
+    //     if () {
+    //         navigate('/onboarding/get-started', { replace: true })
+    //     }
+    // }, []);
+    console.log(['verify', 'company-verification'].includes(location.pathname))
+    if(!['verify', 'company-verification'].some(path=>location.pathname.includes(path)) && token) return <Navigate to="/dashboard" replace />
+    // if(token) return <Navigate to="/dashboard" replace />
+    if(location.pathname === '/onboarding' || location.pathname === '/onboarding/') return <Navigate to="/onboarding/get-started" replace />
     return (
         <div className="flex text-general h-screen overflow-hidden">
             <div className="w-1/2 hidden md:flex max-h-screen overflow-hidden items-center relative justify-center" style={{ backgroundImage: "url(/images/onboarding.webp)" }}>

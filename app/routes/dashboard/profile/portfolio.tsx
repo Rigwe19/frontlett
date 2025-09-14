@@ -23,8 +23,8 @@ type Props = {}
 // }
 const Portfolio = () => {
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-    const {alert} = useLoader()
-    const {updateStep} = useAuth();
+    const { alert } = useLoader()
+    const { updateStep } = useAuth();
     const navigate = useNavigate();
     const [showForm, setShowForm] = useState(false);
     const [dragging, setDragging] = useState(false);
@@ -126,20 +126,23 @@ const Portfolio = () => {
                 fd.append(`portfolios[${index}][description]`, item.description)
                 fd.append(`portfolios[${index}][image]`, item.image)
                 count += 1;
+            } else {
+                alert('Some field are empty', 5000, "error");
+                return
             }
         })
         // console.log(fd)
-        if (count < 3) {
-            alert('you need at least 3 portfolio', 5000, "error");
-            return
-        }
-        await post<any, { success: boolean;step: number }>('/profile/save-portfolio', fd, true)
+        // if (count < 3) {
+        //     alert('you need at least 3 portfolio', 5000, "error");
+        //     return
+        // }
+        await post<any, { success: boolean; step: number }>('/profile/save-portfolio', fd, true)
             .then(res => {
                 const { success, step } = res.data;
-                if (success) { 
+                if (success) {
                     navigate('/dashboard/complete-profile/readiness-quiz')
                     updateStep(step)
-                 }
+                }
             })
     }
 
@@ -188,7 +191,7 @@ const Portfolio = () => {
             </div>)}
 
             {/* Add Another Project Button */}
-            <Button onClick={addOne} outline className="text-[#2563eb] dark:text-neutral-200 w-full border-[#64748b] dark:border-neutral-500">
+            <Button onClick={addOne} variant="outline" className="text-[#2563eb] dark:text-neutral-200 w-full border-[#64748b] dark:border-neutral-500">
                 <LuPlus /> Add Another Project
             </Button>
             <Button onClick={handleSubmit} className="self-end mt-4">Next: Portfolio</Button>

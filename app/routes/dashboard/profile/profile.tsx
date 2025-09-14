@@ -3,6 +3,7 @@ import Button from '~/components/ui/button';
 import useAuth from '~/stores/authStore';
 import type { Route } from './+types/profile';
 import { get } from '~/libs/axios';
+import BusinessProfile from '~/components/dashboard/business-profile';
 
 export function meta({ }: Route.MetaArgs) {
     return [
@@ -24,7 +25,11 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
             profile_picture: string;
             dp: string | undefined;
         },
-        portfolio: any,
+        portfolio: {
+            title: string;
+            description: string;
+            path: string;
+        }[],
         education: {
             degree: string;
             institution: string;
@@ -43,7 +48,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 
     const { success, user, profile, portfolio, education, experiences, percentage_completed } = res.data;
     if (success) {
-        if(profile?.profile_picture){
+        if (profile?.profile_picture) {
             profile.dp = import.meta.env.VITE_BASE_SERVICE_URL + profile?.profile_picture;
         }
         console.log(profile)
@@ -60,10 +65,9 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     }
 }
 
-type Props = {}
-
 const Profile = ({ loaderData }: Route.ComponentProps) => {
     // const { user } = useAuth() 
+    if(loaderData?.user?.role === 'business') return <BusinessProfile loaderData={loaderData} />
     return (
         <div className="w-full flex flex-col gap-4">
             <div className="flex gap-2">
@@ -76,22 +80,9 @@ const Profile = ({ loaderData }: Route.ComponentProps) => {
                 <div className="flex justify-between">
                     <div className="flex gap-8">
                         <div className="w-[92px] h-[92px] rounded-full relative">
-                            <img src={loaderData?.profile?.dp??"/images/avatar.png"} alt="" className="size-[92px] rounded-full" />
-                            {/* <svg width="90" height="93" viewBox="0 0 90 93" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g clipPath="url(#clip0_5589_873)">
-                                    <rect x="0.144531" y="0.290039" width="89.4206" height="92" rx="44.7103" fill="#F0F0F0" />
-                                    <path d="M91.3693 97.4152C91.3693 122.646 70.9156 143.1 45.6847 143.1C20.4537 143.1 0 122.646 0 97.4152C0 72.1842 20.4537 51.7305 45.6847 51.7305C70.9156 51.7305 91.3693 72.1842 91.3693 97.4152Z" fill="#D9D9D9" />
-                                    <path d="M58.1369 29.5227C58.1369 37.8454 52.897 44.5923 44.5743 44.5923C36.2516 44.5923 31.0909 37.8454 31.0909 29.5227C31.0909 21.2 36.2516 14.4531 44.5743 14.4531C52.897 14.4531 58.1369 21.2 58.1369 29.5227Z" fill="#D9D9D9" />
-                                    <path d="M63.826 19.4681L45.7674 14.3181C45.7127 14.3025 45.6556 14.2968 45.5989 14.3013L41.82 14.6036C41.7534 14.609 41.6887 14.6282 41.63 14.6602L41.6124 14.6698C41.1796 14.9059 41.3473 15.5635 41.8403 15.5635H43.1717C43.2077 15.5635 43.2437 15.5676 43.2787 15.5757L46.3192 16.2773L49.7573 17.2705C49.8429 17.2953 49.9198 17.3435 49.9794 17.4099L52.5224 20.2436C52.6127 20.3442 52.7415 20.4016 52.8766 20.4016H63.6955C64.2474 20.4016 64.3568 19.6195 63.826 19.4681Z" fill="#D9D9D9" />
-                                </g>
-                                <defs>
-                                    <clipPath id="clip0_5589_873">
-                                        <rect x="0.144531" y="0.290039" width="89.4206" height="92" rx="44.7103" fill="white" />
-                                    </clipPath>
-                                </defs>
-                            </svg> */}
+                            <img src={loaderData?.profile?.dp ?? "/images/avatar.png"} alt="" className="size-[92px] rounded-full border-2 border-[#0D6EFD]" />
                             <div className="absolute z-0 w-6 h-6 rounded-full flex justify-center items-center bottom-2 right-0 bg-white dark:bg-neutral-500">
-                                <LuPencilLine />
+                                <LuPencilLine color="#0D6EFD" strokeWidth={2} />
                             </div>
                         </div>
                         <section className=" flex flex-col gap-2.5">
@@ -103,7 +94,7 @@ const Profile = ({ loaderData }: Route.ComponentProps) => {
                                     No location</p>
                             </div>
 
-                            <Button className="">Edit</Button>
+                            <Button className="py-1">Edit</Button>
                         </section>
                     </div>
                     <button className="flex h-fit py-2.5 px-4 justify-center items-center gap-2.5 rounded-md border dark:border-neutral-500 border-[#E2E8F0]">Edit</button>
@@ -152,7 +143,7 @@ const Profile = ({ loaderData }: Route.ComponentProps) => {
                                 {entry[0]}
                             </div>
                             {entry[1].map(value => (
-                                <div key={`${value}-morning`} className="bg-[#dcf6fc] rounded p-2 text-xs text-[#1f2937]">
+                                <div key={`${value}-morning`} className="bg-[#dcf6fc] dark:bg-neutral-500 rounded p-2 text-xs text-[#1f2937] dark:text-neutral-200">
                                     {value}
                                 </div>
                             ))}
@@ -184,7 +175,7 @@ const Profile = ({ loaderData }: Route.ComponentProps) => {
                     {loaderData?.profile?.skills?.map((skill: string) => (
                         <div
                             key={skill}
-                            className="bg-[#f2f7ff] px-2.5 rounded-full text-[#3b82f6] hover:bg-[#e2e8f0] border border-[#e2e8f0]"
+                            className="bg-[#f2f7ff] px-3 rounded-full text-[#3b82f6] dark:text-neutral-200 text-sm dark:bg-neutral-600 border border-[#e2e8f0] dark:border-neutral-500 flex items-center"
                         >
                             {skill}
                         </div>
@@ -201,7 +192,7 @@ const Profile = ({ loaderData }: Route.ComponentProps) => {
                         Manage Portfolio
                     </button>
                 </div>
-                <div className="w-full flex justify-center">
+                {loaderData?.portfolio.length === 0 && <div className="w-full flex justify-center">
                     <div className="flex flex-col items-center gap-3">
                         <div className="flex flex-col items-center gap-3 self-stretch">
                             <LuUser size={40} className="text-[#D1D5DB] dark:text-neutral-500" />
@@ -209,6 +200,14 @@ const Profile = ({ loaderData }: Route.ComponentProps) => {
                         </div>
                         <button className="flex p-2.5 justify-center items-center gap-2.5 rounded-md border border-[#E2E8F0] dark:border-neutral-500">Add Portfolio</button>
                     </div>
+                </div>}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {loaderData?.portfolio?.map(value=><PortfolioCard
+                    key={value.path}
+                        title={value.title}
+                        description={value.description}
+                        imageUrl={`${import.meta.env.VITE_BASE_SERVICE_URL}${value.path}`}
+                    />)}
                 </div>
             </div>
             <div className="w-full flex flex-col p-[25px] gap-6 rounded-lg border border-[#E2E8F0] dark:border-neutral-500 bg-white dark:bg-neutral-700">
@@ -362,6 +361,27 @@ function EducationCard({ title, institution, period }: Readonly<Education>) {
                 </div>
             </div>
             <div className="text-sm text-[#64748b] dark:text-neutral-400">{institution}</div>
+        </div>
+    )
+}
+type Portfolio = {
+    title: string;
+    description: string;
+    imageUrl: string
+}
+function PortfolioCard({ title, description, imageUrl }: Readonly<Portfolio>) {
+    return (
+        <div className="border dark:border-neutral-500 rounded-lg overflow-hidden">
+            <div className="relative h-40">
+                <img src={imageUrl || "/placeholder.svg"} alt={title} className="object-cover w-full h-full" />
+            </div>
+            <div className="p-4">
+                <div className="flex justify-between items-start">
+                    <h3 className="font-medium text-[#0f1729]">{title}</h3>
+                    <span className="h-4 w-4 text-[#3b82f6]" />
+                </div>
+                <p className="text-sm text-[#64748b]">{description}</p>
+            </div>
         </div>
     )
 }

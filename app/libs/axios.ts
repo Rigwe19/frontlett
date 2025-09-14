@@ -1,6 +1,5 @@
 import axios, { AxiosError, type AxiosResponse } from "axios";
 import useAuth, { getAuthState } from "../stores/authStore";
-import { notification } from "./notification"; // Adjust the import path
 import { useLoader } from "~/stores/loaderStore";
 
 const axiosInstance = axios.create({

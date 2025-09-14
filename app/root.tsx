@@ -46,6 +46,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/ico" href="/favicon.ico" />
+        <meta property="og:title" content="Frontlett Virtualting" />
+        <meta property="og:description" content="Transform the Way You Work: Flexible Hiring, Maximum Impact." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://frontlett.com/" />
+        <meta property="og:image" content="https://frontlett.com/images/loader.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Frontlett Virtualting" />
+        <meta name="twitter:description" content="Transform the Way You Work: Flexible Hiring, Maximum Impact." />
+        <meta name="twitter:image" content="https://yourdomain.com/images/loader.png" />
         <Meta />
         <Links />
       </head>
@@ -89,9 +99,9 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
+    <main className="flex flex-col justify-center items-center h-screen">
+      <h1 className="text-[80px] font-bold leading-[150%]">{message}</h1>
+      <p className="text-lg">{details}</p>
       {stack && (
         <pre className="w-full p-4 overflow-x-auto">
           <code>{stack}</code>

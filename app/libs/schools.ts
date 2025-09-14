@@ -145,7 +145,7 @@ const schools:School[] = [
     code: "FU Wukari"
   },
   {
-    name: "Federal University, Oye-Ekiti",
+    name: "Federal University Oye-Ekiti",
     city: "Oye-Ekiti",
     code: "FU Oye-Ekiti"
   },
@@ -2477,5 +2477,108 @@ const questions: QuizQuestion[] = [
       options: ["Yes", "No"]
   }
 ];
+
+export interface EmployerQuizQuestion {
+  id: number;
+  question: string;
+  options: string[];
+}
+
+export const employerQuestions: EmployerQuizQuestion[] = [
+  // Section 1 – Organizational Readiness
+  {
+    id: 1,
+    question:
+      "Do you have clearly defined tasks or responsibilities for a Virtualting staff member to own?",
+    options: ["Yes", "No"],
+  },
+  {
+    id: 2,
+    question:
+      "Have you identified a supervisor or point of contact to guide and support the talent?",
+    options: ["Yes", "No"],
+  },
+  {
+    id: 3,
+    question:
+      "Do you understand that Virtualting staff are full-time employees, not freelancers?",
+    options: ["Yes", "No"],
+  },
+  {
+    id: 4,
+    question:
+      "Are you prepared to provide onboarding, context, and tools to help them succeed?",
+    options: ["Yes", "No"],
+  },
+  {
+    id: 5,
+    question:
+      "Will you introduce them to internal team members to enable collaboration?",
+    options: ["Yes", "No"],
+  },
+  // Section 2 – Legal & Compliance Awareness
+  {
+    id: 6,
+    question:
+      "Are you aware that Virtualting staff must be treated fairly under labor and data protection laws (e.g., NDPR)?",
+    options: ["Yes", "No"],
+  },
+  {
+    id: 7,
+    question:
+      "Are you open to signing NDAs and following shared staffing policies?",
+    options: ["Yes", "No"],
+  },
+  {
+    id: 8,
+    question:
+      "Do you understand that termination must follow due process and platform policy?",
+    options: ["Yes", "No"],
+  },
+  {
+    id: 9,
+    question:
+      "Do you understand that you are responsible for health insurance coverage for your Virtualting staff as part of full-time employment?",
+    options: ["Yes", "No"],
+  },
+  {
+    id: 10,
+    question:
+      "Do you understand that you would have to make upfront escrow payments as part of our protection model?",
+    options: ["Yes", "No"],
+  },
+  // Section 3 – Communication & Ongoing Support
+  {
+    id: 11,
+    question:
+      "Will you provide structured performance feedback at least monthly or biweekly?",
+    options: ["Yes", "No"],
+  },
+  {
+    id: 12,
+    question:
+      "Are you ready to raise performance concerns early through proper channels?",
+    options: ["Yes", "No"],
+  },
+  {
+    id: 13,
+    question:
+      "Do you know that Frontlett HR will help manage underperformance fairly?",
+    options: ["Yes", "No"],
+  },
+  {
+    id: 14,
+    question:
+      "Are you open to rotations or replacements if productivity isn’t optimal?",
+    options: ["Yes", "No"],
+  },
+  {
+    id: 15,
+    question:
+      "Will you participate in review calls to ensure success for you and the talent?",
+    options: ["Yes", "No"],
+  },
+];
+
 export { schools, courses, questions };
-export type { School, QuizQuestion }
+export type { School, QuizQuestion };

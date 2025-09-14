@@ -76,3 +76,7 @@ button {
     0 0 0 0px #0764ea;
   }
 }
+
+@plugin 'tailwind-scrollbar' {
+  nocompatible: true;
+}

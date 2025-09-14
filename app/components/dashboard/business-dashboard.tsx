@@ -57,14 +57,14 @@ const BusinessDashboard = (loaderData: { jobs?: Job[]; dashboard?: number[] }) =
     return (
         <div className="w-full flex flex-col gap-4">
             <div className="flex flex-col items-center gap-6 self-stretch py-4">
-                <div className="flex items-center justify-between self-stretch border-b dark:border-neutral-500">
+                <div className="flex items-center justify-between self-stretch border-b border-gray-200 dark:border-neutral-500">
                     <div className="flex items-center gap-2 md:gap-6">
                         <div className="flex w-[72px] h-[72px] p-0 justify-center items-center rounded-[50px]">
-                            <img src="/images/avatar.png" alt="" />
+                            <img src={user?.profile?.profile_picture?(import.meta.env.VITE_BASE_SERVICE_URL + user?.profile?.profile_picture):"/images/avatar.png"} alt="" />
                         </div>
                         <div className="flex max-w-[721px] w-full flex-col items-start gap-1">
-                            <p className="text-sm">{user?.company_name}</p>
-                            <h2 className="text-lg md:text-2xl font-medium tracking-[0px]">Welcome, {user?.full_name?.substring(0, user.full_name.indexOf(' ')).toUpperCase()} 👋</h2>
+                            <p className="text-[22px] text-[#64748B] dark:text-neutral-400 leading-[150%]">{user?.profile?.company_name}</p>
+                            <h2 className="text-base font-medium tracking-[0px]">Welcome, {user?.full_name?.substring(0, user.full_name.indexOf(' ')).toUpperCase()} 👋</h2>
                         </div>
                     </div>
                     <Button onClick={() => navigate('/dashboard/job/create')}>Post a Job</Button>
@@ -78,7 +78,7 @@ const BusinessDashboard = (loaderData: { jobs?: Job[]; dashboard?: number[] }) =
                             <p className="self-stretch md:text-2xl text-xl font-medium tracking-[0px]">Cut Salary Costs by 40% with Flexible Talent</p>
                             <p className="self-stretch text-[17px] dark:text-neutral-400">Hire vetted professionals for exact time slots—no full-time overhead.</p>
                         </div>
-                        <button className="flex w-[203px] p-[10px] items-center gap-1.5 rounded-[20px] border dark:border-neutral-500 bg-white dark:bg-neutral-500">
+                        <button className="flex w-[203px] p-[10px] items-center gap-1.5 rounded-[20px] border border-gray-200 dark:border-neutral-500 bg-white dark:bg-neutral-500">
                             <LuSearch size={20} className="text-[#64748B] dark:text-neutral-300" />
                             <span className="flex flex-col justify-center text-sm font-semibold text-black dark:text-white">Discover resources</span>
                         </button>
@@ -92,7 +92,7 @@ const BusinessDashboard = (loaderData: { jobs?: Job[]; dashboard?: number[] }) =
                 </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-[24px] self-stretch">
-                <div className="flex p-px flex-col items-start gap-[10px] rounded-[12px] border-[1px] dark:border-neutral-500 bg-white dark:bg-neutral-700 [box-shadow:0px]">
+                <div className="flex p-px flex-col items-start gap-[10px] rounded-[12px] border border-gray-200 dark:border-neutral-500 bg-white dark:bg-neutral-700 [box-shadow:0px]">
                     <div className="flex h-[334px] flex-col items-center self-stretch shadow overflow-y-auto">
                         <div className="flex p-[23px] items-center justify-between gap-[27px] self-stretch bg-[rgba(0,_0,_0,_0.00)]">
                             <div className="flex flex-col items-start gap-[7px]">
@@ -129,7 +129,7 @@ const BusinessDashboard = (loaderData: { jobs?: Job[]; dashboard?: number[] }) =
                         </div>}
                     </div>
                 </div>
-                <div className="flex p-px flex-col items-start gap-[10px] rounded-[12px] border-[1px] dark:border-neutral-500 bg-white dark:bg-neutral-700 [box-shadow:0px]">
+                <div className="flex p-px flex-col items-start gap-[10px] rounded-[12px] border border-gray-200 dark:border-neutral-500 bg-white dark:bg-neutral-700 [box-shadow:0px]">
                     <div className="flex h-[334px] flex-col items-center gap-[74px] self-stretch shadow">
                         <div className="flex p-[23px] items-center justify-between gap-[27px] self-stretch bg-[rgba(0,_0,_0,_0.00)]">
                             <div className="flex w-[310px] flex-col items-start gap-[7px]">
@@ -162,7 +162,7 @@ const BusinessDashboard = (loaderData: { jobs?: Job[]; dashboard?: number[] }) =
                                 </div>
                             </div>
                         </button>
-                        <button className="flex pb-1 flex-col items-start gap-[10px] flex-shrink-0 rounded-[16px] overflow-hidden border dark:border-neutral-500 bg-[rgba(0,_0,_0,_0.00)]">
+                        <button className="flex pb-1 flex-col items-start gap-[10px] flex-shrink-0 rounded-[16px] overflow-hidden border border-gray-200 dark:border-neutral-500 bg-[rgba(0,_0,_0,_0.00)]">
                             <div className="flex flex-col items-center md:gap-4 gap-2 self-stretch">
                                 <div className="h-[153px] self-stretch bg-gray-300"></div>
                                 <div className="flex w-[190px] flex-col items-start">
@@ -188,7 +188,7 @@ type Props = {
 
 const Card = ({ item: { colors, title, icon }, amount }: Props) => {
     return (
-        <div className="flex p-4 flex-col items-start gap-2.5 rounded-[12px] border dark:border-neutral-600 bg-white dark:bg-neutral-700 [box-shadow:0px]">
+        <div className="flex p-4 flex-col items-start gap-2.5 rounded-[12px] border border-gray-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 [box-shadow:0px]">
             <div className="flex flex-col items-start gap-0.5 self-stretch">
                 <div className="flex justify-between items-center self-stretch">
                     <div className="flex flex-col items-start gap-1">

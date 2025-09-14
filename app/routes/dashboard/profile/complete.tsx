@@ -16,43 +16,13 @@ const steps = [
     'Step 3: Professional Details',
     // 'Step 4: Documents',
     'Step 4: Portfolio',
-    'Step 5: Readiness Quiz'
+    'Step 5: Readiness Checklist'
 ]
-// export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-//     let result = '';
-//     // if(getAuthState().user?.profile?.steps === undefined){
-//     //     result = '/complete-profile/core-information'
-//     // }
-//     const step = getAuthState().step > (getAuthState().user?.profile?.steps ?? 0) ? getAuthState().step : getAuthState().user?.profile?.steps
-//     switch (step) {
-//         case 1:
-//             result = '/dashboard/complete-profile/core-information'
-//             break;
-//         case 2:
-//             result = '/dashboard/complete-profile/availability'
-//             break;
-//         case 3:
-//             result = '/dashboard/complete-profile/details'
-//             break;
-//         case 4:
-//             result = '/dashboard/complete-profile/portfolio'
-//             break;
-//         case 5:
-//             result = '/dashboard/complete-profile/readiness-quiz'
-//             break;
-//         // case 6:
-//         //     result = '/complete-profile/'
-//         //     break;
-//         default:
-//             result = '/dashboard/complete-profile/core-information'
-//             break;
-//     }
-//     return { result };
-// }
 const Complete = ({ loaderData }: Route.ComponentProps) => {
     const { user, step } = useAuth();
     const page = (step > (user?.profile?.steps ?? 0) ? step : user?.profile?.steps) ?? 1
     let result = '';
+    console.log('log')
     switch (page) {
         case 1:
             result = '/dashboard/complete-profile/core-information'
@@ -67,7 +37,7 @@ const Complete = ({ loaderData }: Route.ComponentProps) => {
             result = '/dashboard/complete-profile/portfolio'
             break;
         case 5:
-            result = '/dashboard/complete-profile/readiness-quiz'
+            result = '/dashboard/complete-profile/readiness-checklist'
             break;
         // case 6:
         //     result = '/complete-profile/'
@@ -76,7 +46,7 @@ const Complete = ({ loaderData }: Route.ComponentProps) => {
             result = '/dashboard/complete-profile/core-information'
             break;
     }
-    if(user?.profile?.is_completed){
+    if(user?.profile?.is_completed || user?.role === 'business') {
         result = '/dashboard';
     }
     if (location.pathname !== result) return <Navigate to={result} />

@@ -61,14 +61,6 @@ const schema = yup
         invite_code: yup.string().required(),
         confirm: yup.string().oneOf([yup.ref('password')], 'Confirm Password must match Password'),
         role: yup.string().required(),
-        company_name: yup.string().when('role', {
-            is: 'business',
-            then: (schema) => schema.required()
-        }),
-        company_location: yup.string().when('role', {
-            is: 'business',
-            then: (schema) => schema.required()
-        })
     })
     .required()
 const inviteSchema = yup
@@ -85,13 +77,13 @@ const numSchema = yup
         phone_number: yup.string().matches(/^0\d{10}$/, {
             message: "phone number must be numbers of 11 characters"
         }).length(11).required(),
-        nin: yup.string().matches(/^\d{11}$/, {
-            message: "NIN number must be numbers of 11 characters"
-        }).length(11)
+        nin: yup.string()
         //@ts-ignore
         .when('role', (role, schema)=>{
             if(role[0] !== 'business'){
-                return schema.required()
+                return schema.required().matches(/^\d{11}$/, {
+            message: "NIN number must be numbers of 11 characters"
+        }).length(11)
             }
             
         }),
@@ -118,7 +110,7 @@ const Signup = () => {
     const [showRequest, setShowRequest] = useState(false);
     const { register: RG, invite_code, google, updateNumber } = useAuth();
     const { alert } = useLoader();
-    const [role, setRole] = useState(searchParams.get('option') ?? 'employee');
+    const [role, setRole] = useState(searchParams.get('option') ?? 'resource');
     const { formState: { errors }, register, handleSubmit, watch } = useForm({
         resolver: yupResolver(schema),
         defaultValues: {
@@ -199,7 +191,7 @@ const Signup = () => {
     }
     const handlePhoneSubmit = async (form: { phone_number: string }) => {
         updateNumber(form.phone_number)
-        const role = searchParams.get('option') ?? 'employee';
+        const role = searchParams.get('option') ?? 'resource';
         await get<{ success: boolean, url: string }>('/auth/google', {
             redirectUrl: `${location.origin + location.pathname}`,
             mode: 'signup',
@@ -229,6 +221,8 @@ const Signup = () => {
                 const { success } = res.data;
                 if (success) {
                     setShowRequest(false)
+                    invite.reset();
+                    setIVErrors({});
                     alert('Invite link request successful, hold on and we would get back to you', 5000, 'success')
                 }
             }).catch(e => {
@@ -247,7 +241,7 @@ const Signup = () => {
         onSuccess: (tokenResponse) => {
             setShowModal(false)
             updateNumber(form.getValues('phone_number'))
-            const role = searchParams.get('option') ?? 'employee';
+            const role = searchParams.get('option') ?? 'resource';
             // console.log(role);
             // Send the credential (ID token) to your Laravel backend
             google({
@@ -293,14 +287,12 @@ const Signup = () => {
                     <p className="leading-6 text-[#6B7280] dark:text-neutral-300 text-center">{role === 'business' ? 'Create your employer account to start hiring talent' : 'Join as a virtualt and start your journey.'}</p>
                 </div>
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full">
-                    {role === 'business' && <Input {...register("company_name")} error={sErrors.company_name ?? errors.company_name?.message} inputMode='text' icon={LuBuilding2} type="text" placeholder="Nimbou Service" label="Company Name" />}
                     <Input {...register("full_name")} error={sErrors.full_name ?? errors.full_name?.message} inputMode='text' autoComplete='name webauthn' icon={LuUserPen} type="text" placeholder="Tunde Amos" label={role === 'business' ? 'Contact Person' : 'Full Name'} />
                     <Input {...register("email")} error={sErrors.email ?? errors.email?.message} inputMode='email' autoComplete='name webauthn' icon={LuMail} type="email" placeholder="youremail@mail.com" label="Email" />
                     {role !== 'business' && <Input {...register("nin")} error={sErrors.nin ?? errors.nin?.message} inputMode='numeric' icon={HiOutlineIdentification} type="text" placeholder="14192639172" label="NIN Number" />}
                     <Input {...register("username")} error={sErrors.username ?? errors.username?.message} inputMode='text' autoComplete='name webauthn' icon={LuUser} type="text" placeholder="username" label="Username" />
-                    <Input {...register("invite_code")} error={sErrors.invite_code ?? errors.invite_code?.message} disabled={!!invite_code} inputMode='url' icon={LuLink} type="text" placeholder="6udie9" info={<><span>An invite link is required to join.</span> <button type="button" onClick={()=>setShowRequest(true)} className="text-primary">Request Invite Code</button></>} label="Invite Link" />
+                    <Input {...register("invite_code")} error={sErrors.invite_code ?? errors.invite_code?.message} disabled={!!invite_code} inputMode='url' icon={LuLink} type="text" placeholder="8156561293" info={<><span>An invite link is required to join.</span> <button type="button" onClick={()=>setShowRequest(true)} className="text-primary">Request Invite Code</button></>} label="Enter Your Invite Code" />
                     <Input {...register("phone_number")} error={sErrors.phone_number ?? errors.phone_number?.message} inputMode='numeric' autoComplete='mobile tel' icon={LuPhone} type="text" placeholder="0902 123 6789" label="Phone Number (For OTP)" />
-                    {role === 'business' && <Input {...register("company_location")} error={sErrors.company_location ?? errors.company_location?.message} inputMode='text' autoComplete='address-level3 webauthn' icon={LuMapPin} type="text" placeholder="Abuja Nigeria" label="Company Location" />}
                     <Input {...register("password")} error={sErrors.password ?? errors.password?.message} inputMode='text' autoComplete='new-password webauthn' icon={RiLockPasswordLine} type='password' placeholder="Create a strong password" label="Password" />
                     <Input {...register("confirm")} error={sErrors.confirm ?? errors.confirm?.message} inputMode='text' autoComplete='new-password webauthn' icon={RiLockPasswordLine} type='password' placeholder="Confirm your password" label="Confirm Password" />
                     <div className="flex flex-col gap-2.5 items-center w-full">

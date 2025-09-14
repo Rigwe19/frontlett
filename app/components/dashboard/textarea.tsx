@@ -17,7 +17,7 @@ const Textarea = ({ icon, className, error, info, placeholder, label, ...props }
             {label && <label className="font-semibold" htmlFor={`input_${id}`}>{label}</label>}
             <div className='relative flex flex-col gap-1'>
                 <div className="w-full relative">
-                    <div className="absolute top-0 bottom-0 flex justify-center items-center w-10">
+                    <div className="absolute top-0 bottom-0 flex justify-center items-start w-10 py-[13px]">
                         {icon && createElement(icon, {
                             size: 20,
                             className: `${error ? 'text-[#EF4444]' : 'dark:text-neutral-400 text-neutral-700'}`,

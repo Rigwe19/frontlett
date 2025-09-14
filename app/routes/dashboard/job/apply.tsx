@@ -20,6 +20,7 @@ import { get, post } from "~/libs/axios";
 import type { Route } from "./+types/apply";
 import Modal from "~/components/dashboard/modal";
 import Textarea from "~/components/dashboard/textarea";
+import { FaNairaSign } from "react-icons/fa6";
 
 
 export function meta({ }: Route.MetaArgs) {
@@ -99,7 +100,7 @@ export default function JobPosting() {
             .then(res => {
                 const {success} = res.data;
                 if(success){
-                    navigate('/dashboard/home')
+                    navigate('/dashboard')
                 }
             })
     }
@@ -124,7 +125,7 @@ export default function JobPosting() {
     }
 
     return (
-        <div className="max-w-5xl mx-auto bg-[#f8fafc] dark:bg-neutral-800 min-h-screen pb-8">
+        <div className="max-w-5xl mx-auto bg-[#f8fafc] dark:bg-neutral-900 min-h-screen pb-8">
             {/* Header with back button */}
             <div className="p-4">
                 <button onClick={() => navigate(-1)} className="flex items-center text-[#64748b] dark:text-neutral-400 font-medium">
@@ -134,13 +135,13 @@ export default function JobPosting() {
             </div>
 
             {/* Banner with profile */}
-            <div className="relative w-full aspect-[16_/_6] bg-[#0f1729] rounded-lg overflow-hidden">
-                <img
+            <div className="relative w-full aspect-[16_/_6] bg-[#0f1729] dark:bg-neutral-800 rounded-lg overflow-hidden">
+                {/* <img
                     src="/images/apply-header.jpg"
                     alt="Person writing in notebook"
                     className="object-cover opacity-80"
-                />
-
+                /> */}
+                <h2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl font-bold">{job?.user?.company_name}</h2>
                 {/* Profile section */}
                 <div className="absolute bottom-0 left-0 p-6 w-full">
                     <div className="flex items-start">
@@ -159,8 +160,8 @@ export default function JobPosting() {
                     {/* Job details */}
                     <div className="flex flex-wrap gap-2 mt-4">
                         <div className="bg-white dark:bg-neutral-700 rounded-full px-4 py-2 flex items-center text-sm">
-                            <LuDollarSign className="h-4 w-4 mr-1 text-[#4f46e5] dark:text-neutral-300" />
-                            <span>₦{job?.rate}/hr</span>
+                            <FaNairaSign className="text-[#4f46e5] dark:text-neutral-300 mr-1" />
+                            <span>{job?.rate}/hr</span>
                         </div>
                         {job?.time_slot?.map(slot => <div key={`${slot.day}_${slot.start}_1`} className="bg-white dark:bg-neutral-700 rounded-full px-4 py-2 flex items-center text-sm">
                             <LuClock3 className="h-4 w-4 mr-1 text-[#4f46e5] dark:text-neutral-300" />
@@ -346,7 +347,7 @@ export default function JobPosting() {
                         </div>
                 </div>}
                 <div className="flex justify-between items-center self-stretch">
-                    <Button outline className="h-10 bg-white dark:bg-neutral-600 border-none text-gray-700 dark:text-neutral-300" onClick={() => setIsOpen(false)}>Cancel</Button>
+                    <Button variant="outline" className="h-10 bg-white dark:bg-neutral-600 border-none text-gray-700 dark:text-neutral-300" onClick={() => setIsOpen(false)}>Cancel</Button>
                     <Button className="h-10" onClick={handleNext}>Next <LuArrowRight /></Button>
                 </div>
 

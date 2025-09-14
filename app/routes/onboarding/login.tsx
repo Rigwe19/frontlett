@@ -5,8 +5,8 @@ import { Link, useNavigate, useSearchParams } from 'react-router'
 import Input from '~/components/dashboard/input'
 import Button from '~/components/ui/button'
 import type { Route } from './+types/login'
-import { yupResolver } from '@hookform/resolvers/yup'
 import useAuth from '~/stores/authStore'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
 import * as yup from "yup"
 import { get } from '~/libs/axios'
@@ -64,7 +64,7 @@ const Login = () => {
                 //     await post("http://localhost:8000/api/auth/google/callback", { code: googleCode, mode: "register" })
                 .then((res) => {
                     // localStorage.setItem("token", res.data.token);
-                    navigate("/dashboard/profile"); // Redirect after registration
+                    navigate("/dashboard"); // Redirect after registration
                 })
             //         .catch(() => console.error("Google register error"));
         }
@@ -72,10 +72,11 @@ const Login = () => {
     const onSubmit = async (form: Inputs) => {
         try {
             await signIn(form)
-                .then(success => {
-                    // const {success} = res;
-                    // console.log(res)
-                    if (success) {
+                .then(({success, verified}) => {
+                    if(!verified && success) {
+                        navigate('/onboarding/verify')
+                    }
+                    if (success && verified) {
                         navigate('/dashboard')
                     }
                 })
@@ -130,6 +131,7 @@ const Login = () => {
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full">
                     <Input {...register("email")} error={sErrors.email ?? errors.email?.message} icon={LuMail} placeholder="youremail@mail.com" label="Email" />
                     <Input {...register("password")} error={sErrors.password ?? errors.password?.message} icon={RiLockPasswordLine} type='password' placeholder="************" label="Password" />
+                    <Link to="/onboarding/forgot-password" className="self-end text-sm font-medium text-[#64748B] dark:text-neutral-400">Forgot Password?</Link>
                     <div className="flex flex-col gap-2.5 items-center w-full">
                         <Button className="w-full">Continue</Button>
                         <div className="relative flex justify-center w-full">

@@ -6,7 +6,7 @@ type Props = {}
 const options = [{
     icon: LuBriefcase,
     title: 'Employee Resource',
-    query: 'employee',
+    query: 'resource',
     description: 'Work for multiple companies 2 hours per day or 1 day per week.',
     to: '/onboarding/signup',
     disabled: false,

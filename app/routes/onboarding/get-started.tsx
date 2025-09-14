@@ -15,7 +15,7 @@ const GetStarted = (props: Props) => {
                 <img src="/logo-white.svg" alt="" className="w-[106px] hidden dark:block" />
                 <h2 className="font-bold text-2xl leading-8">Join the World's 1st Staff & Work Share Platform</h2>
                 <Button to="/onboarding/option" className='font-general w-full'>Join as Resource</Button>
-                <Button to="/onboarding/signup?option=business" outline className='font-general w-full'>I'm a Business</Button>
+                <Button variant="outline" to="/onboarding/signup?option=business" className='font-general w-full'>I'm a Business</Button>
                 <p className="text-sm leading-5">
                     Already have an account?{" "}
                     <Link to="/onboarding/signin" className="text-primary">Log in</Link>

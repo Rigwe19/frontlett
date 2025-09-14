@@ -1,20 +1,19 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { createElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { LuBrainCircuit, LuBriefcase, LuCalendar, LuCircleCheckBig, LuClock, LuGlobe, LuPlus, LuUser } from 'react-icons/lu';
 import { GiLevelEndFlag } from 'react-icons/gi';
+import { LuBrainCircuit, LuBriefcase, LuCalendar, LuCircleCheckBig, LuCopy, LuClock, LuGlobe, LuPlus, LuX } from 'react-icons/lu';
 import { useNavigate } from 'react-router';
 import * as yup from 'yup';
 import Input from '~/components/dashboard/input';
-import Select from '~/components/dashboard/select';
-import Skills from '~/components/dashboard/skills';
-import Textarea from '~/components/dashboard/textarea';
-import Button from '~/components/ui/button';
-import { post } from '~/libs/axios';
-import { days, tabs, times, tips, levels } from '~/libs/job_data';
-import type { Route } from '../+types/dashboard';
 import Requirements from '~/components/dashboard/requirements';
 import RichText from '~/components/dashboard/rich-text';
+import Select from '~/components/dashboard/select';
+import Skills from '~/components/dashboard/skills';
+import Button from '~/components/ui/button';
+import { post } from '~/libs/axios';
+import { days, levels, tabs, times, tips, experiences, academicDegrees } from '~/libs/job_data';
+import type { Route } from '../+types/dashboard';
 
 export function meta({ }: Route.MetaArgs) {
     return [
@@ -43,6 +42,7 @@ const daySchema = yup.object({
     end: yup.string().required(),
 });
 type Props = {}
+
 const Index = (props: Props) => {
     const [active, setActive] = useState(0);
     const navigate = useNavigate()
@@ -163,12 +163,12 @@ const Index = (props: Props) => {
     };
 
     const saveForm = async () => {
-        const form:FormData  = {...getValues()}
+        const form: FormData = { ...getValues() }
         await post<any, { success: boolean }>('/jobs/create', form)
             .then(res => {
                 const { success } = res.data;
                 if (success) {
-                    navigate('/dashboard/home')
+                    navigate('/dashboard')
                 }
             })
     }
@@ -182,32 +182,46 @@ const Index = (props: Props) => {
             <div className="md:grid md:grid-cols-3 flex flex-col gap-4">
                 <div className="md:col-span-2 flex flex-col items-start gap-[21px]">
                     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-start gap-[25px] self-stretch">
-                        <div className="flex p-px flex-col items-start gap-[10px] self-stretch border-b dark:border-b-neutral-500 bg-[#F1F5F9] dark:bg-neutral-800">
+                        <div className="flex p-px flex-col items-start gap-[10px] self-stretch border-b border-b-gray-300 dark:border-b-neutral-500 bg-[#F1F5F9] dark:bg-neutral-800">
                             <div className="flex items-center gap-1 self-stretch">
                                 {tabs.map((tab, index) => <div key={tab} className={`flex h-[37px] px-4 py-1.5 justify-center items-center gap-[10px] ${index === active ? 'bg-white dark:bg-neutral-700 border-b-2 border-primary mt-0.5 -mb-0.5 mx-0.5' : ''}`}>
                                     <p className="text-[#0F1729] dark:text-neutral-300 text-center text-[12px] font-medium">{tab}</p>
                                 </div>)}
                             </div>
                         </div>
-                        {active === 0 && <div className="flex p-[25px] flex-col items-start gap-2.5 self-stretch rounded-[12px] border dark:border-neutral-500 bg-white dark:bg-neutral-700">
+                        {active === 0 && <div className="flex p-[25px] flex-col items-start gap-2.5 self-stretch rounded-[12px] border border-gray-300 dark:border-neutral-500 bg-white dark:bg-neutral-700">
                             <div className="flex flex-col items-start gap-[19px] self-stretch">
                                 <div className="flex flex-col items-start gap-2 self-stretch">
                                     <div className="flex flex-col items-start gap-[11px] self-stretch">
                                         <Input {...register("title")} error={sErrors.title ?? errors.title?.message} inputMode='url' type="text" placeholder="Eg: UI Designer for 2 hours slots" info={<span>Be specific about the role and time commitment</span>} label="Job Title" />
-                                        <RichText onChange={e=>setValue('description', e)} error={sErrors.description ?? errors.description?.message} placeholder="Describe the job requirements, responsibilities and deliverables" info={<span>Include key information about the project, deliverables, and expectations</span>} label="Job Description" />
-                                        <Input {...register("experience")} error={sErrors.experience ?? errors.experience?.message} inputMode='text' type="text" placeholder="2-3 Years"label="Experience" />
-                                        <Input {...register("education")} error={sErrors.education ?? errors.education?.message} inputMode='text' type="text" placeholder="Bachelor's degree in Design or related field"label="Education" />
-                                        <Select {...register("level")} data={levels} error={sErrors.level ?? errors.level?.message} placeholder="Select Level" label="Job Level" />
+                                        <RichText onChange={e => setValue('description', e)} error={sErrors.description ?? errors.description?.message} placeholder="Describe the job requirements, responsibilities and deliverables" info={<span>Include key information about the project, deliverables, and expectations</span>} label="Job Description" />
+                                        <Select {...register("experience")} data={experiences} error={sErrors.experience ?? errors.experience?.message} placeholder="Select Experience" label="Experience" />
+                                        <Select {...register("education")} data={academicDegrees} error={sErrors.education ?? errors.education?.message} placeholder="Select Education" label="Education" />
+                                        <div className="flex gap-2 w-full">
+                                            <Select {...register("level")} data={levels} error={sErrors.level ?? errors.level?.message} placeholder="Select Level" label="Job Level" info="Be specific about the role and time commitment" postfix={levels.find(val=>val.value === watch('level'))?.salary ?? ''} />
+                                        </div>
+                                        
                                     </div>
                                 </div>
                             </div>
                         </div>}
-                        {active === 1 && <div className="flex p-[25px] flex-col items-start gap-[10px] self-stretch rounded-[12px] border dark:border-neutral-500 bg-white dark:bg-neutral-700">
+                        {active === 1 && <div className="flex p-[25px] flex-col items-start gap-[10px] self-stretch rounded-[12px] border border-gray-300 dark:border-neutral-500 bg-white dark:bg-neutral-700">
                             <div className="flex flex-col items-start gap-[27px] self-stretch">
                                 <div className="flex p-0 items-center self-stretch">
                                     <div className="flex flex-col items-start gap-4 w-full">
                                         <div className="flex flex-col items-start gap-[8px] self-stretch">
-                                            <h2 className="self-stretch text-[#0F1729] dark:text-neutral-300 text-[18px] font-medium">Time Slot Requirements</h2>
+                                            <div className="flex justify-between">
+                                                <h2 className="self-stretch text-[#0F1729] dark:text-neutral-300 text-[18px] font-medium">Time Slot Requirements</h2>
+                                                <div className="relative w-full flex flex-row items-center justify-start text-center text-smi text-gray-100 font-general-sans">
+                                                    <button className="w-[92px] rounded bg-white h-[30px] flex flex-row items-center justify-center py-1.5 px-[41px] box-border">
+                                                        <div className="relative leading-[20px] font-medium">Time Slot</div>
+                                                    </button>
+                                                    <button className="w-[88px] rounded bg-gray-200 h-[30px] flex flex-row items-center justify-center py-1.5 px-[38px] box-border text-slategray">
+                                                        <div className="relative leading-[20px] font-medium">Daily Slot</div>
+                                                    </button>
+                                                </div>
+                                            </div>
+
                                             <span className="self-stretch text-[#64748B] dark:text-neutral-400 text-[16px]">Select the time slots when you need the candidate to be available</span>
                                         </div>
                                         <div className="flex flex-col items-center gap-[41px] self-stretch">
@@ -220,30 +234,40 @@ const Index = (props: Props) => {
                                                     </button>
                                                 </div>
                                             </div>
-                                            {timeSlot && <div className="flex w-full p-[17px] flex-col items-start gap-[10px] rounded-[12px] border dark:border-neutral-500 bg-[rgba(0,_0,_0,_0.00)]">
+                                            {timeSlot && <div className="flex w-full p-[17px] flex-col items-start gap-[10px] rounded-[12px] border border-gray-300 dark:border-neutral-500 bg-[rgba(0,_0,_0,_0.00)]">
                                                 <div className="flex flex-col items-start gap-[16px] self-stretch">
                                                     <div className="flex flex-col md:flex-row items-center justify-between w-full gap-1 md:gap-4">
                                                         <Select value={dayForm.day} onChange={e => handleChange('day', e.target.value)} data={days} label="Day" placeholder="Select Day" />
                                                         <Select value={dayForm.start} onChange={e => handleChange('start', e.target.value)} data={times.map(time => ({ label: time, value: time }))} label="Start Time" placeholder="Start Time" />
                                                         <Select value={dayForm.end} onChange={e => handleChange('end', e.target.value)} data={times.map(time => ({ label: time, value: time }))} label="End Time" placeholder="End Time" />
                                                     </div>
-                                                    <div className="flex flex-col gap-2 md:flex-row justify-between w-full">
-                                                        <div className="flex gap-2 flex-col md:flex-row">
-                                                            <Button type="button" onClick={addSlot} className="h-10">Add Slot</Button>
-                                                            <Button type="button" onClick={handleCopy} className="h-10 bg-[#F0F5FF] dark:bg-neutral-600" outline>Copy to All Weekdays</Button>
+                                                    <div className="flex gap-2 flex-row justify-between w-full">
+                                                        <div className="flex gap-2 flex-row">
+                                                            <Button type="button" onClick={addSlot} className="h-10">
+                                                                <span className="hidden md:inline">Add Slot</span>
+                                                                <LuPlus className="md:hidden inline" />
+                                                            </Button>
+                                                            <Button type="button" onClick={handleCopy} className="h-10 bg-[#F0F5FF] dark:bg-neutral-600" variant="outline">
+                                                                <span className="hidden md:inline">Copy to All Weekdays</span>
+                                                                <LuCopy className="md:hidden inline" />
+                                                                </Button>
                                                         </div>
-                                                        <Button type="button" onClick={() => setTimeSlot(false)} className="h-10 dark:border-neutral-400 border-[#64748B] text-[#64748B] dark:text-neutral-400 hover:bg-red-500/40" outline>Cancel</Button>
+                                                        <Button type="button" onClick={() => setTimeSlot(false)} className="h-10 dark:border-neutral-400 border-[#64748B] text-[#64748B] dark:text-neutral-400 hover:bg-red-500/40" variant="outline">
+                                                            
+                                                                <span className="hidden md:inline">Cancel</span>
+                                                                <LuX className="md:hidden inline" />
+                                                        </Button>
                                                     </div>
                                                 </div>
                                                 {(watch('time_slot')?.length ?? 0) > 0 && <div className="flex flex-col w-full">
-                                                    <div className="grid grid-cols-3">
+                                                    {/* <div className="grid grid-cols-3">
                                                         <span className="text-[#0F1729] dark:text-neutral-300">Day</span>
                                                         <span className="text-[#0F1729] dark:text-neutral-300">Start Time</span>
                                                         <span className="text-[#0F1729] dark:text-neutral-300">End Time</span>
-                                                    </div>
+                                                    </div> */}
                                                     <div className="mb-6">
                                                         <h3 className="text-xl font-semibold text-[#0f1729] dark:text-neutral-300 mb-3">Time Slots</h3>
-                                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                                                             {watch('time_slot')?.map(time => <div key={time.day} className="bg-[#f1f5f9] dark:bg-neutral-600 p-4 rounded-xl flex items-center">
                                                                 <LuCalendar className="w-5 h-5 mr-3 text-[#64748b] dark:text-neutral-300" />
                                                                 <div>
@@ -263,6 +287,7 @@ const Index = (props: Props) => {
                                                 <p className="self-stretch text-[#64748B] dark:text-neutral-500 text-center text-[13px]">Add your available time slots to get matched with projects.</p>
                                                 {error && <span className="text-sm text-red-500">{error}</span>}
                                             </div>}
+                                            <Select value={dayForm.end} onChange={e => handleChange('end', e.target.value)} data={[{ label: 'Onsite', value: 'Onsite' }, { label: 'Remote', value: 'Remote' }]} label="Job Type" placeholder="Job Type" />
                                             <Skills value={watch('skills')} onSave={e => setValue('skills', e)} placeholder="Add Skills......." info={<span>Add skills that are essential for the job</span>} label="Required Skills" />
                                             <Requirements value={watch('requirements')} onSave={e => setValue('requirements', e)} placeholder="Add Requirements......." info={<span>Add requirements for the job</span>} label="Requirements" />
                                         </div>
@@ -270,15 +295,15 @@ const Index = (props: Props) => {
                                 </div>
                             </div>
                         </div>}
-                        {active === 2 && <div className="flex p-[25px] flex-col items-start gap-[10px] self-stretch rounded-[12px] border dark:border-neutral-500 bg-white dark:bg-neutral-700">
+                        {active === 2 && <div className="flex p-[25px] flex-col items-start gap-[10px] self-stretch rounded-[12px] border border-gray-300 dark:border-neutral-500 bg-white dark:bg-neutral-700">
                             <div className="flex flex-col items-start gap-[27px] self-stretch">
                                 <div className="flex p-0 items-center self-stretch">
                                     <div className="flex flex-col items-start gap-4 w-full">
-                                        <Input {...register("rate")} error={error ?? errors.rate?.message} prefix="₦" inputMode='numeric' type="number" placeholder="0.00" info={<span>Set the hourly rate you're willing to pay</span>} label="Slot Rate (₦)" />
+                                        <Input {...register("rate")} error={error ?? errors.rate?.message} prefix="₦" inputMode='numeric' type="text" placeholder="0.00" info={<span>Set the hourly rate you're willing to pay</span>} label="Slot Rate (₦)" />
                                         <div className="flex flex-col items-start gap-[16px] self-stretch">
                                             <h2 className="self-stretch text-[#0F1729] text-[17px] font-medium dark:text-neutral-300">Job Visibility</h2>
                                             <div className="flex flex-col items-start gap-[12px] w-full">
-                                                <button type="button" onClick={() => setValue('visibility', 'public')} className={`flex p-[17px] flex-col items-start gap-[10px] text-left self-stretch rounded-[12px] border dark:border-neutral-500 ${watch('visibility') === 'public' ? 'bg-[rgba(37,_99,_235,_0.05)]' : ''}`}>
+                                                <button type="button" onClick={() => setValue('visibility', 'public')} className={`flex p-[17px] flex-col items-start gap-[10px] text-left self-stretch rounded-[12px] border border-gray-300 dark:border-neutral-500 ${watch('visibility') === 'public' ? 'bg-[rgba(37,_99,_235,_0.05)]' : ''}`}>
                                                     <div className="flex items-start gap-[12px] self-stretch">
                                                         <div className="flex w-[20px] h-[20px] justify-center items-center bg-[rgba(0,_0,_0,_0.00)]">
                                                             <LuGlobe size={20} color="#2563EB" />
@@ -292,7 +317,7 @@ const Index = (props: Props) => {
                                                         </div>
                                                     </div>
                                                 </button>
-                                                <button type="button" onClick={() => setValue('visibility', 'invite')} className={`flex p-[17px] flex-col items-start gap-[10px] text-left self-stretch rounded-[12px] border dark:border-neutral-500 ${watch('visibility') === 'invite' ? 'bg-[rgba(37,_99,_235,_0.05)]' : ''}`}>
+                                                <button type="button" onClick={() => setValue('visibility', 'invite')} className={`flex p-[17px] flex-col items-start gap-[10px] text-left self-stretch rounded-[12px] border border-gray-300 dark:border-neutral-500 ${watch('visibility') === 'invite' ? 'bg-[rgba(37,_99,_235,_0.05)]' : ''}`}>
                                                     <div className="flex items-start gap-[12px] self-stretch">
                                                         <div className="flex w-[20px] h-[20px] justify-center items-center bg-[rgba(0,_0,_0,_0.00)]">
                                                             <LuBriefcase size={20} className="text-[#64748B]" />
@@ -312,11 +337,11 @@ const Index = (props: Props) => {
                                 </div>
                             </div>
                         </div>}
-                        {active === 3 && <div className="w-full bg-white dark:bg-neutral-700 rounded-3xl shadow-sm p-8 border border-[#e2e8f0] dark:border-neutral-500">
+                        {active === 3 && <div className="w-full bg-white dark:bg-neutral-700 rounded-3xl shadow-sm p-8 border border-[#e2e8f0] border-gray-300 dark:border-neutral-500">
                             <h1 className="text-3xl font-semibold text-[#0f1729] dark:text-neutral-300 mb-6">Job Preview</h1>
 
                             {/* Public Job Notice */}
-                            {watch('visibility') === 'public' && <div className="bg-[#f1f5f9] flex-col bg-neutral-600 rounded-xl p-4 mb-8 flex justify-center gap-2">
+                            {watch('visibility') === 'public' && <div className="bg-[#f1f5f9] flex-col dark:bg-neutral-600 rounded-xl p-4 mb-8 flex justify-center gap-2">
                                 <div className="flex gap-1">
                                     <div className="w-4 h-4 rounded-full bg-[#22c55e] flex-shrink-0"></div>
                                     <LuGlobe className="w-5 h-5 text-[#0f1729] dark:text-neutral-300" />
@@ -334,7 +359,7 @@ const Index = (props: Props) => {
                             </div>}
 
                             {/* Job Details Card */}
-                            <div className="border border-[#e2e8f0] dark:border-neutral-500 rounded-2xl p-6">
+                            <div className="border border-[#e2e8f0] border-gray-300 dark:border-neutral-500 rounded-2xl p-6">
                                 {/* Job Title */}
                                 <h2 className="text-2xl font-bold text-[#0f1729] dark:text-neutral-300 mb-4">{watch('title')}</h2>
 
@@ -362,8 +387,8 @@ const Index = (props: Props) => {
                                 {/* Job Description */}
                                 <div className="mb-6">
                                     <h3 className="text-xl font-semibold text-[#0f1729] dark:text-neutral-300 mb-3">Job Description</h3>
-                                    <div className="text-[#64748b] p-4 border h-40 overflow-y-auto border-[#e2e8f0] dark:border-neutral-500 dark:text-neutral-400 dark:border-text-neutral-500 rounded-xl">
-                                        <article  dangerouslySetInnerHTML={{__html: watch('description')??''}} />
+                                    <div className="text-[#64748b] p-4 border h-40 overflow-y-auto border-[#e2e8f0] border-gray-300 dark:border-neutral-500 dark:text-neutral-400 dark:border-text-neutral-500 rounded-xl">
+                                        <article dangerouslySetInnerHTML={{ __html: watch('description') ?? '' }} />
                                     </div>
                                 </div>
 
@@ -410,7 +435,7 @@ const Index = (props: Props) => {
                             </div>
                         </div>}
                         <div className="w-full flex justify-between items-center">
-                            {active !== 0 && <Button type="button" onClick={() => setActive(pv => pv - 1)} outline>Back to {tabs[active - 1]}</Button>}
+                            {active !== 0 && <Button type="button" onClick={() => setActive(pv => pv - 1)} variant="outline">Back to {tabs[active - 1]}</Button>}
                             {active === 0 && <div></div>}
                             <Button>{active < 2 ? 'Continue to ' : ''}{tabs[active + 1]} {active === 3 && 'Post Job'}</Button>
                         </div>
@@ -420,7 +445,7 @@ const Index = (props: Props) => {
                     <p className="self-stretch text-[#0F1729] dark:text-neutral-300 text-[18px] font-medium">Posting Tips</p>
                     <div className="flex flex-col justify-center items-center self-stretch bg-[rgba(0,_0,_0,_0.00)]">
                         <div className="flex w-full flex-col items-start gap-[15px]">
-                            {tips.map(tip => <div key={tip.title} className="flex p-[17px] bg-accent dark:bg-neutral-700 flex-col items-start gap-[10px] self-stretch rounded-[12px] border dark:border-neutral-500 bg-[rgba(0,_0,_0,_0.00)]">
+                            {tips.map(tip => <div key={tip.title} className="flex p-[17px] bg-accent dark:bg-neutral-700 flex-col items-start gap-[10px] self-stretch rounded-[12px] border border-gray-300 dark:border-neutral-500 bg-[rgba(0,_0,_0,_0.00)]">
                                 <div className="flex flex-col items-start gap-[9px] self-stretch">
                                     <div className="flex items-center gap-2">
                                         {createElement(tip.icon, {

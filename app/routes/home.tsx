@@ -10,6 +10,6 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  return <Navigate to="/onboarding/get-started" />
-  // return <Welcome />;
+  // return <Navigate to="/onboarding/get-started" />
+  return <Welcome />;
 }

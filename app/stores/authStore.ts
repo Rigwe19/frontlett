@@ -3,7 +3,7 @@ import { type AxiosResponse } from "axios";
 import { deleteRequest, get, post } from "../libs/axios";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-type User = {
+export type User = {
   // workId: string;
   email: string;
   id: string;
@@ -11,29 +11,144 @@ type User = {
   referral_code: string;
   username: string;
   phone_number: string;
+  phone_verified_at: string;
   location?: string;
-  company_name?: string;
+  rc_number?: string;
+  rc_verified?: boolean;
   invited_count: number;
   invite_tokens: number;
-  role: "employee" | "business" | "admin" | "adviser" | "influencer";
-  // linkedIn: string;
+  role: "resource" | "business" | "admin" | "adviser" | "influencer";
+  subscription: boolean|null;
+  manager: Manager;
   created_at: string;
-  profile: Profile
-  percentage_completed: number
+  profile: Profile;
+  percentage_completed: number;
+  work_id: string;
+  businesses?: Business[];
+  accounts: Account[]
+};
+
+export type VisitorUser = {
+  userId: string;
+  full_name: string;
+  username: string;
+  location?: string;
+  profile: {
+    profile_picture: string;
+    professional_headline: string;
+    about: string;
+    hourly_rate: number;
+    roles: string[];
+    skills: string[];
+    rating: number;
+    job_success_rate: number;
+    portfolio?: Array<{
+      title: string;
+      description: string;
+      imageUrl: string;
+      projectUrl: string;
+    }>;
+    workExperience?: Array<{
+      title: string;
+      company: string;
+      startDate: string;
+      endDate: string;
+      description: string;
+    }>;
+    currentWork?: Array<{
+      title: string;
+      status: "In Progress" | "Completed";
+      startDate: string;
+      endDate: string;
+      description: string;
+    }>;
+    education?: Array<{
+      degree: string;
+      institution: string;
+      startDate: string;
+      endDate: string;
+      description?: string;
+    }>;
+    socialMedia?: Array<{
+      platform: string;
+      url: string;
+    }>;
+  };
+  availability?: {
+    totalHours: number;
+    schedule: Array<{
+      day: string;
+      startTime: string;
+      endTime: string;
+    }>;
+  };
 };
 
 interface Profile {
   profile_picture: string;
   about: string;
   professional_headline: string;
+  description: string;
   availability: any;
   roles: string[];
   skills: string[];
   rate: number;
   is_completed: boolean;
-  steps: number
+  steps: number;
+  rc: string;
+  size: string;
+  industry?: string;
+  company_name?: string;
+  company_location?: string;
 }
 
+interface Manager {
+  name: string;
+  email: string;
+}
+
+interface Business {
+  id: number;
+  company_name: string;
+  official_email: string;
+  industry: string;
+  size?: string;
+  description: string;
+  address: string;
+  country: string;
+  state: string;
+  website_url: string;
+  contact_name: string;
+  contact_role: string;
+  contact_email: string;
+  contact_phone_number: string;
+  cover_photo: string;
+  profile_picture: string;
+  linkedIn: string;
+  github: string;
+  twitter: string;
+  other: string;
+  is_completed: string;
+  location?: string;
+  rc?: string;
+  is_verified?: boolean;
+  created_at: string;
+}
+
+interface ResetPasswordPayload {
+  email: string;
+  password: string;
+  token: string;
+  password_confirmation: string;
+}
+interface Account {
+  profile_picture: string;
+  name: string;
+  role: string;
+  desc: string;
+  id: number;
+  active: boolean;
+}
 interface UseAuthStore {
   user: User | null;
   token: string | null;
@@ -42,7 +157,7 @@ interface UseAuthStore {
   updateCode: (code: string) => void;
   number: string;
   step: number;
-  updateStep: (step:number) => void;
+  updateStep: (step: number) => void;
   updateNumber: (code: string) => void;
   signIn: (form: { email: string; password: string }) => Promise<any>;
   fetchCurrentUser: () => Promise<void>;
@@ -50,7 +165,9 @@ interface UseAuthStore {
   updateUser: (user: any) => void;
   logout: () => Promise<void>;
   // google: (state: {code: string, mode: 'register' | 'login', redirectUrl: string, state?: string|null}, details?: any) => Promise<void>;
-  google: (details?: any) => Promise<{success: boolean; url: string}>;
+  google: (details?: any) => Promise<{ success: boolean; url: string }>;
+  sendResetLink: (email: string) => Promise<any>;
+  resetPassword: (payload: ResetPasswordPayload) => Promise<any>;
 }
 interface AuthResponse {
   code: number;
@@ -86,7 +203,7 @@ const useAuth = create<UseAuthStore>()(
       signIn: async (form: {
         email: string;
         password: string;
-      }): Promise<void> => {
+      }): Promise<any> => {
         try {
           const response: AxiosResponse = await post(`/auth/login`, {
             email: form.email,
@@ -95,9 +212,15 @@ const useAuth = create<UseAuthStore>()(
 
           // const userData = response.data;
           // console.log(response.data);
-          set({ token: response.data.token });
+          set({ token: response.data.token, user: response.data.user });
+          if (!response.data.user.phone_verified_at) {
+            set({ number: response.data.user.phone_number });
+          }
           // console.log("SETUP", { user: response.data.user });
-          return Promise.resolve(response.data.success);
+          return Promise.resolve({
+            success: response.data.success,
+            verified: response.data.user.phone_verified_at,
+          });
         } catch (error: any) {
           if (error.status === 422) {
             const validationErrors: FormErrors = {};
@@ -136,7 +259,7 @@ const useAuth = create<UseAuthStore>()(
 
           // const userData = response.data.data;
 
-          set({ token: response.data.token });
+          set({ token: response.data.token, user: response.data.user });
           return Promise.resolve(response.data.success);
           // console.log("SETUP", { token: userData.token });
         } catch (error: any) {
@@ -167,11 +290,14 @@ const useAuth = create<UseAuthStore>()(
       google: async (details) => {
         try {
           // const response: AxiosResponse = await get("/auth/google/callback", { ...state, ...details })
-          const response: AxiosResponse = await post(`/auth/google/callback`, details);
+          const response: AxiosResponse = await post(
+            `/auth/google/callback`,
+            details
+          );
 
           // const userData = response.data.data;
 
-          set({ token: response.data.token });
+          set({ token: response.data.token, user: response.data.user });
           return Promise.resolve(response.data.success);
           // console.log("SETUP", { token: userData.token });
         } catch (error: any) {
@@ -185,6 +311,54 @@ const useAuth = create<UseAuthStore>()(
             return Promise.reject({ username: "Invalid username or password" });
           }
           // Handle authentication errors
+        }
+      },
+      //forget password
+      sendResetLink: async (email: string) => {
+        try {
+          const response: AxiosResponse = await post("/auth/forgot-password", {
+            email,
+          });
+          return Promise.resolve(response.data?.success);
+        } catch (error: any) {
+          if (error.status === 422) {
+            const validationErrors: FormErrors = {};
+            for (const err in error.validationErrors) {
+              validationErrors[err] = error.validationErrors[err][0];
+            }
+            return Promise.reject(validationErrors);
+          }
+          return Promise.reject({
+            email: "Failed to send reset link. Please try again.",
+          });
+        }
+      },
+      //reset password
+      resetPassword: async ({
+        email,
+        password,
+        token,
+        password_confirmation,
+      }) => {
+        try {
+          const response: AxiosResponse = await post("/auth/reset-password", {
+            email,
+            password_confirmation,
+            password,
+            token,
+          });
+
+          const { success } = response.data;
+          return Promise.resolve(success);
+        } catch (error: any) {
+          if (error.status === 422) {
+            const validationErrors: FormErrors = {};
+            for (const err in error.validationErrors) {
+              validationErrors[err] = error.validationErrors[err][0];
+            }
+            return Promise.reject(validationErrors);
+          }
+          return Promise.reject({ general: "Failed to reset password" });
         }
       },
     }),

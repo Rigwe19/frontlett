@@ -81,7 +81,7 @@ const Quiz = (props: Props) => {
     return (
         <div className="flex flex-col gap-8">
             <div className="w-full">
-                <h1 className="text-[#0f1729] dark:text-neutral-200 text-3xl font-bold mb-6">Readiness Quiz</h1>
+                <h1 className="text-[#0f1729] dark:text-neutral-200 text-3xl font-bold mb-6">Readiness Checklist</h1>
 
                 <div className="border border-[#e2e8f0] dark:border-neutral-500 rounded-2xl p-6 bg-white dark:bg-neutral-700">
                     {questions.map((question) => (
@@ -124,7 +124,7 @@ const Quiz = (props: Props) => {
                         <DialogTitle className="font-bold flex text-2xl items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <LuCircleAlert size={28} className="text-red-500" />
-                                Complete the Quiz First!
+                                Complete the Checklist First!
                             </div>
                             <LuX onClick={()=>setIsOpen(false)} />
                         </DialogTitle>
@@ -141,7 +141,7 @@ const Quiz = (props: Props) => {
                         </div>
                     </DialogPanel>
                 </div>
-                Hello title={'Complete the Quiz First'}
+                {/* Hello title={'Complete the Checklist First'} */}
             </Dialog>
         </div>
     )

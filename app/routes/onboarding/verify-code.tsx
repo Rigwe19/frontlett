@@ -15,6 +15,7 @@ import type { Route } from './+types/verify-code'
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     const authState = getAuthState();
     const number = authState.number
+    // console.log(number)
     await post('/auth/otp/send', {
         phone: number,
     })
@@ -27,10 +28,10 @@ interface FormErrors {
 const VerifyCode = () => {
     const navigate = useNavigate()
     const [otp, setOtp] = useState('');
-    const [timer, setTimer] = useState<any>(120);
+    const [timer, setTimer] = useState<any>(30);
     const [completed, setCompleted] = useState(false);
     const [error, setError] = useState('');
-    const { number } = useAuth()
+    const { number, updateUser } = useAuth()
     useEffect(() => {
         let interval = setInterval(() => {
             setTimer((lastTimer: number) => {
@@ -60,6 +61,7 @@ const VerifyCode = () => {
             const { success } = response.data;
             if (success) {
                 setOtp('')
+                setError('')
                 setCompleted(false); setTimer(120)
             }
         } catch (error) {
@@ -85,6 +87,7 @@ const VerifyCode = () => {
             })
             const { success, role } = response.data;
             if (success) {
+                updateUser({phone_verified_at: new Date().toISOString()})
                 if (role === 'business') {
                     navigate('/onboarding/company-verification')
                 } else {
@@ -99,6 +102,7 @@ const VerifyCode = () => {
                     validationErrors[err] = error.validationErrors[err][0];
                 }
                 setError(validationErrors.code)
+                setOtp('')
             }
         }
 
@@ -122,7 +126,7 @@ const VerifyCode = () => {
             <div className="flex flex-col w-9/10 xl:w-7/10 justify-center items-center gap-6 flex-1">
                 <div className="flex flex-col gap-2 items-center">
                     <h2 className="font-bold text-xl lg:text-4xl xl:leading-10 lg:leading-8 text-center">Verify your Phone Number</h2>
-                    <p className="leading-6 text-[#6B7280] dark:text-neutral-300">We've sent a verification code to {number}</p>
+                    <p className="leading-6 text-[#6B7280] dark:text-neutral-300">We've sent a verification code to {number} and you email</p>
                 </div>
                 <div className="flex flex-col gap-5 w-full items-center">
                     <p className="">Enter 4-digit code</p>

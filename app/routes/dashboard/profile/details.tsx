@@ -227,7 +227,7 @@ function Education() {
                         reset()
                     }
                 })
-            // navigate('/dashboard/home');
+            // navigate('/dashboard');
         } catch (error) {
             console.error('Error:', error);
         }
@@ -324,7 +324,7 @@ function Roles() {
                         reset()
                     }
                 })
-            // navigate('/dashboard/home');
+            // navigate('/dashboard');
         } catch (error) {
             console.error('Error:', error);
         }

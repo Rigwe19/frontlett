@@ -34,7 +34,7 @@ const EmployeeDashboard = (loaderData:{ jobs?: Job[]; }) => {
     // }
     return (
         <div className="w-full flex flex-col gap-4">
-            <div className="flex w-full md:pl-4 p-3 flex-col justify-center items-start gap-[11px] flex-shrink-0 rounded-[12px] border dark:border-neutral-500 bg-white dark:bg-neutral-700">
+            <div className="flex w-full md:pl-4 p-3 flex-col justify-center items-start gap-[11px] flex-shrink-0 rounded-[12px] border border-gray-200 dark:border-neutral-500 bg-white dark:bg-neutral-700">
                 <div className="flex flex-col md:flex-row w-full md:items-center gap-[11px]">
                     <div className="flex flex-col md:flex-row items-center gap-1.5 justify-between md:w-5/7">
                         <Input placeholder="Search for opportunities" icon={LuSearch} className="grow" />
@@ -42,7 +42,7 @@ const EmployeeDashboard = (loaderData:{ jobs?: Job[]; }) => {
                     </div>
                     <div className="flex items-center gap-2">
                         <Button
-                            outline
+                            variant="outline"
                             className="dark:border-neutral-500 h-12 text-black dark:text-neutral-200"
                         >
                             <LuFilter />
@@ -79,7 +79,7 @@ const EmployeeDashboard = (loaderData:{ jobs?: Job[]; }) => {
                     <PiEmptyDuotone size={64} className="text-[#6B7280] dark:text-neutral-300" />
                     <p className="text-sm text-[#6B7280] dark:text-neutral-300">You haven't applied for any job yet</p>
                 </div>}
-                {jobs.length > 0 && <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {jobs.length > 0 && <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                     {jobs.map(job=><JobCard key={job.id} job={job} />)}
                 </div>}
             </div>

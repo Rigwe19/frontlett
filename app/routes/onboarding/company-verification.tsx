@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { LuArrowRight, LuFactory } from 'react-icons/lu'
+import { LuArrowRight, LuBuilding2, LuFactory, LuMapPin } from 'react-icons/lu'
 import { PiUsersThree } from 'react-icons/pi'
 import { Link, useNavigate } from 'react-router'
 import * as yup from "yup"
@@ -27,8 +27,9 @@ interface FormErrors {
 type Inputs = {
     industry: string,
     size: string,
-    rc?: string
-    // email: string,
+    rc?: string,
+    company_name: string,
+    company_location: string,
 }
 const schema = yup
     .object({
@@ -36,7 +37,9 @@ const schema = yup
         size: yup.string().required(),
         rc: yup.string().length(7).matches(/^\d{7}$/, {
             message: "RC number must be numbers of 7 characters"
-        })
+        }),
+        company_name: yup.string().required(),
+        company_location: yup.string().required()
         // phone_number: yup.string().matches(/^0\d{10}$/, {
         //     message: "phone number must be numbers of 11 characters"
         // }).length(11).required(),
@@ -52,13 +55,17 @@ const CompanyVerification = () => {
         defaultValues: {
             industry: '',
             size: '',
-            rc: ''
+            rc: '',
+            company_name: '',
+            company_location: '',
         }
     });
     const [sErrors, setSErrors] = useState<FormErrors>({
         industry: undefined,
         size: undefined,
         rc: undefined,
+        company_name: undefined,
+        company_location: undefined,
     });
 
     const onSubmit = async (form: Inputs) => {
@@ -79,8 +86,8 @@ const CompanyVerification = () => {
         } catch (error) {
             // console.error('Error:', error);
             setSErrors((prev) => ({
-            ...prev,
-            // document: 'An error occurred while submitting the form. Please try again.',
+                ...prev,
+                // document: 'An error occurred while submitting the form. Please try again.',
             }));
         }
     }
@@ -101,9 +108,11 @@ const CompanyVerification = () => {
                     <p className="leading-6 text-[#6B7280] dark:text-neutral-300">Create your employer account to start hiring talent</p>
                 </div>
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 w-full items-center">
+                    <Input {...register("company_name")} error={sErrors.company_name ?? errors.company_name?.message} inputMode='text' icon={LuBuilding2} type="text" placeholder="Nimbou Service" label="Company Name" />
+                    <Input {...register("company_location")} error={sErrors.company_location ?? errors.company_location?.message} inputMode='text' autoComplete='address-level3 webauthn' icon={LuMapPin} type="text" placeholder="Abuja Nigeria" label="Company Location" />
                     <Select {...register("industry")} data={industries.map(id => ({ label: id, value: id }))} error={sErrors.industry ?? errors.industry?.message} icon={LuFactory} placeholder="Select Industry" label="Industry Type" />
                     <Select {...register("size")} data={sizes.map(id => ({ label: id, value: id }))} error={sErrors.size ?? errors.size?.message} icon={LuFactory} placeholder="Select Size" label="Company Size" />
-                    <Input {...register("rc")} error={sErrors.rc ?? errors.rc?.message} inputMode='text' icon={PiUsersThree} placeholder="8271028" label="Registration Number"  />
+                    <Input {...register("rc")} error={sErrors.rc ?? errors.rc?.message} inputMode='text' icon={PiUsersThree} placeholder="8271028" label="Registration Number" />
                     {/* <DragAndDrop onChange={(e: File[])=>setFiles(e)} error={sErrors.document} /> */}
                     <div className="flex flex-col gap-2.5 items-center w-full">
                         <Button className="w-full">Continue <LuArrowRight /></Button>

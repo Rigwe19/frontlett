@@ -11,6 +11,7 @@ import { type CropperRef, Cropper } from 'react-advanced-cropper';
 import Portal from '~/components/dashboard/portal'
 import 'react-advanced-cropper/dist/style.css'
 import useAuth from '~/stores/authStore'
+import Textarea from '~/components/dashboard/textarea'
 
 interface FormErrors {
     [key: string]: string | undefined;
@@ -19,7 +20,7 @@ interface FormErrors {
 type Inputs = {
     professional_headline: string,
     about: string
-    rate: string,
+    location: string,
 }
 interface Image {
     type?: string;
@@ -30,9 +31,7 @@ const schema = yup
         // profile_picture: yup.string().required(),
         professional_headline: yup.string().required(),
         about: yup.string().required(),
-        rate: yup.string().matches(/^\d*$/, {
-            message: "rate must be a number"
-        }).required().min(4)
+        location: yup.string().required()
         // phone_number: yup.string().matches(/^0\d{10}$/, {
         //     message: "phone number must be numbers of 11 characters"
         // }).length(11).required(),
@@ -47,12 +46,12 @@ const Information = () => {
     const [image, setImage] = useState<Image | null>(null);
     const cropperRef = useRef<CropperRef>(null);
     const [openCropper, setOpenCropper] = useState(false);
-    const { formState: { errors }, register, handleSubmit, watch } = useForm({
+    const { formState: { errors }, register, handleSubmit } = useForm({
         resolver: yupResolver(schema),
         defaultValues: {
             about: '',
             professional_headline: '',
-            rate: ''
+            location: ''
         }
     });
     const [sErrors, setSErrors] = useState<FormErrors>({
@@ -128,7 +127,7 @@ const Information = () => {
         }
         const formData = new FormData();
         formData.append('about', form.about);
-        formData.append('rate', form.rate);
+        formData.append('address', form.location);
         formData.append('professional_headline', form.professional_headline);
         formData.append(`profile_picture`, file);
 
@@ -170,7 +169,7 @@ const Information = () => {
                 </div>
                 <Input {...register('professional_headline')} error={sErrors.professional_headline ?? errors?.professional_headline?.message} label="Professional Headline" placeholder="Eg: Product Designer and No-code Developer" info="This will be displayed on your profile and in search results." />
                 <Input {...register('about')} error={sErrors.about ?? errors?.about?.message} label="About" placeholder="Something you wont Employers to see about you" />
-                <Input {...register('rate')} inputMode='numeric' error={sErrors.rate ?? errors?.rate?.message} label="Rate" placeholder="Whats Your rate per slot" />
+                <Textarea {...register('location')} error={sErrors.location ?? errors?.location?.message} label="Address" placeholder="No 34 Panaf Drive Wuse Zone 1, Abuja, Nigeria" />
 
                 {openCropper && <Portal open={openCropper}>
                     {image && <div className="w-full relative h-full flex items-center flex-col">
@@ -180,7 +179,7 @@ const Information = () => {
                             resizable: true
                         }} src={image?.src} />
                         <div className="md:absolute md:top-0 bottom-0 left-0 flex items-start mt-4 gap-2">
-                            <Button outline type="button" className="rounded-full" onClick={handleCancel}>
+                            <Button variant="outline" type="button" className="rounded-full" onClick={handleCancel}>
                                 Cancel
                             </Button>
                             <Button type="button" className="rounded-full" onClick={upload}>
@@ -190,7 +189,7 @@ const Information = () => {
                     </div>}
                     {!image && <div className="w-full py-12 h-screen flex justify-center items-center flex-col gap-4">
                         <div className="w-12 h-12 rounded-full border-2 border-y-transparent border-x-primary-500 animate-spin"></div>
-                        <Button outline type="button" className="rounded-full" onClick={handleCancel}>
+                        <Button variant="outline" type="button" className="rounded-full" onClick={handleCancel}>
                             Cancel
                         </Button>
                     </div>}

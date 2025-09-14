@@ -21,7 +21,7 @@ const GoogleCallback = () => {
         // const scope = window.location.search.split('&')[2].split('=')[1];
         if (!code || !state) {
             console.error('Missing required OAuth parameters');
-            navigate('/login'); // Redirect to login page if parameters are missing
+            navigate('/onboarding/signin'); // Redirect to login page if parameters are missing
             return;
         }
         await get<{ success: boolean, path: string, token: string, user: any }>('/auth/google/callback', {
