@@ -223,7 +223,7 @@ const Signup = () => {
                     setShowRequest(false)
                     invite.reset();
                     setIVErrors({});
-                    alert('Invite link request successful, hold on and we would get back to you', 5000, 'success')
+                    alert('Invite link request successful, An email has been sent to your email address', 5000, 'success')
                 }
             }).catch(e => {
                 if (e.status === 422) {
