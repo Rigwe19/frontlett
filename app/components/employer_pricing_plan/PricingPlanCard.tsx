@@ -30,14 +30,14 @@ const PricingPlanCard = () => {
           <div
             key={plan.id}
             className={cn(
-              "rounded-xl border border-gray-200 p-5 flex flex-col items-center text-center shadow-sm",
-              plan.name === "Free for Life" && "bg-[#F9FAFB]",
+              "rounded-xl border border-gray-200 dark:border-neutral-600 p-5 flex flex-col items-center text-center shadow-sm",
+              plan.name === "Free for Life" && "bg-[#F9FAFB] dark:bg-neutral-700",
               plan.name === "SME" &&
               "bg-gradient-to-br from-[#2563EB] to-[#0D9488] text-white",
-              plan.name === "Startup" && "bg-[#ECFDF5]",
-              plan.name === "Corporate" && "bg-[#F3F4F6]",
+              plan.name === "Startup" && "bg-[#ECFDF5] dark:bg-neutral-700",
+              plan.name === "Corporate" && "bg-[#F3F4F6] dark:bg-neutral-700",
               plan.name === "Government/Institution" &&
-              "border-2 border-orange-400 bg-[#F3F4F6]"
+              "border-2 border-orange-400 bg-[#F3F4F6] dark:bg-neutral-700"
             )}
           >
             <h4 className="font-bold text-lg mb-1">{plan.name}</h4>

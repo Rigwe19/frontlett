@@ -176,7 +176,7 @@ export default function PlanConfirmationModal() {
 
   return (
     <div className="fixed inset-0 bg-black/50 bg-opacity-50 z-50 flex items-center justify-center px-4">
-      <div className="bg-white w-full max-w-xl rounded-lg shadow-xl p-6 relative">
+      <div className="bg-white dark:bg-neutral-900 w-full max-w-xl rounded-lg shadow-xl p-6 relative">
         <button
           className="absolute top-3 right-3 text-gray-500 hover:text-black"
           onClick={closeModal}
@@ -188,7 +188,7 @@ export default function PlanConfirmationModal() {
 
         {/* Plan boxes */}
         <div className="flex justify-between gap-4 mb-6">
-          <div className="border rounded-md p-4 flex-1 text-sm">
+          <div className="border border-neutral-300 dark:border-neutral-600 rounded-md p-4 flex-1 text-sm">
             <p className="text-gray-400 font-medium">Current Plan</p>
             {/* {JSON.stringify(plans)} */}
             <p className="font-semibold">{current?.name ?? "Free for Lifes"}</p>
@@ -199,7 +199,7 @@ export default function PlanConfirmationModal() {
             </p>
             <p className="mt-2">{formatted(current.total_price)}/{current?.billing_cycle}</p>
           </div>
-          <div className="border border-blue-500 rounded-md p-4 flex-1 text-sm bg-blue-50">
+          <div className="border border-blue-500 rounded-md p-4 flex-1 text-sm bg-blue-50 dark:bg-neutral-800">
             <p className="text-blue-500 font-medium">New Plan</p>
             <p className="font-semibold">{plan.name}</p>
             <p className="text-xs">
@@ -212,7 +212,7 @@ export default function PlanConfirmationModal() {
         </div>
 
         {/* Price summary */}
-        <div className="space-y-3 border-t pt-4 text-sm mb-6">
+        <div className="space-y-3 border-t dark:border-neutral-600 border-neutral-300 pt-4 text-sm mb-6">
           <div className="flex justify-between">
             <span>New plan price:</span>
             <span>{getPriceLabel(basePrice, currency)}</span>
@@ -291,7 +291,7 @@ export default function PlanConfirmationModal() {
             })}
           </div>
           {isAddOnDisabled && (
-            <p className="text-xs text-red-500 mt-2 flex items-center gap-1">
+            <p className="text-xs text-red-500 dark:text-red-900 mt-2 flex items-center gap-1">
               <LuInfo className="inline-block" />
               Add-ons require a paid annual plan.
             </p>
@@ -299,7 +299,7 @@ export default function PlanConfirmationModal() {
         </div>
 
         {/* Total + Actions */}
-        <div className="border-t pt-4 flex flex-col gap-4">
+        <div className="border-t dark:border-neutral-600 border-neutral-300 pt-4 flex flex-col gap-4">
           <div className="flex justify-between font-semibold text-base">
             <span>Total:</span>
             <span>{getPriceLabel(totalPrice, currency)}/{billingCycle === 'monthly' ? 'month' : 'year'}</span>

@@ -22,7 +22,7 @@ const EmployeeFeatureComparison = () => {
 
       <table className="min-w-full table-auto border-collapse">
         <thead>
-          <tr className="bg-gray-100 text-sm text-left">
+          <tr className="bg-gray-100 dark:bg-neutral-700 text-sm text-left">
             <th className="p-3 font-medium">Features</th>
             {plans.map((plan) => (
               <th key={plan.id} className="p-3 font-medium text-center">
@@ -33,7 +33,7 @@ const EmployeeFeatureComparison = () => {
         </thead>
         <tbody>
           {/* --- Basic Feature Section --- */}
-          <tr className="bg-gray-100 border-t">
+          <tr className="bg-gray-100 dark:bg-neutral-700 border-t">
             <td className="p-3 font-semibold" colSpan={plans.length + 1}>
               Basic Feature
             </td>
@@ -129,7 +129,7 @@ const EmployeeFeatureComparison = () => {
           </tr>
 
           {/* --- Pro Feature Section --- */}
-          <tr className="bg-gray-100 font-semibold text-sm border-t">
+          <tr className="bg-gray-100 dark:bg-neutral-700 font-semibold text-sm border-t">
             <td className="p-3" colSpan={plans.length + 1}>
               Pro Feature
             </td>
@@ -290,7 +290,7 @@ const EmployeeFeatureComparison = () => {
           </tr>
 
           {/* --- Prices Section --- */}
-          <tr className="bg-gray-100 border-t">
+          <tr className="bg-gray-100 dark:bg-neutral-700 border-t">
             <td className="p-3 font-semibold" colSpan={plans.length + 1}>
               Prices
             </td>

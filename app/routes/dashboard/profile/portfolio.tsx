@@ -140,7 +140,7 @@ const Portfolio = () => {
             .then(res => {
                 const { success, step } = res.data;
                 if (success) {
-                    navigate('/dashboard/complete-profile/readiness-quiz')
+                    navigate('/dashboard/complete-profile/readiness-checklist')
                     updateStep(step)
                 }
             })
@@ -194,7 +194,7 @@ const Portfolio = () => {
             <Button onClick={addOne} variant="outline" className="text-[#2563eb] dark:text-neutral-200 w-full border-[#64748b] dark:border-neutral-500">
                 <LuPlus /> Add Another Project
             </Button>
-            <Button onClick={handleSubmit} className="self-end mt-4">Next: Portfolio</Button>
+            <Button onClick={handleSubmit} className="self-end mt-4">Next: Readiness Checklist</Button>
         </div>
     )
 }

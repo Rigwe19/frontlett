@@ -45,7 +45,7 @@ export default function PricingPage() {
     <div className="px-4 md:px-10 py-12 max-w-[1300px] mx-auto">
       {/* Heading */}
       <div className="text-center mb-10">
-        <h2 className="text-3xl md:text-4xl font-bold text-[#0F1729] mb-3">
+        <h2 className="text-3xl md:text-4xl font-bold text-[#0F1729] dark:text-neutral-200 mb-3">
           Flexible Plans for Every Team Size
         </h2>
         <p className="text-neutral-500 text-sm md:text-base">

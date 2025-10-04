@@ -32,7 +32,7 @@ const FAQSection = () => {
       <h3 className="text-2xl font-semibold mb-6 text-center">
         Frequently Asked Questions
       </h3>
-      <div className="divide-y border rounded-md">
+      <div className="divide-y divide-neutral-300 dark:divide-neutral-600 border dark:border-neutral-600 border-neutral-300 rounded-md">
         {faqs.map((faq, index) => {
           const isOpen = openIndex === index;
 
@@ -42,7 +42,7 @@ const FAQSection = () => {
                 onClick={() => setOpenIndex(isOpen ? null : index)}
                 className="w-full flex justify-between items-center px-4 py-4 text-left focus:outline-none"
               >
-                <span className="font-medium text-[#0F1729]">
+                <span className="font-medium text-[#0F1729] dark:text-neutral-300">
                   {faq.question}
                 </span>
                 <svg
@@ -62,7 +62,7 @@ const FAQSection = () => {
                 </svg>
               </button>
               {isOpen && (
-                <div className="px-4 pb-4 text-sm text-neutral-700">
+                <div className="px-4 pb-4 text-sm text-neutral-700 dark:text-neutral-500">
                   {faq.answer}
                 </div>
               )}

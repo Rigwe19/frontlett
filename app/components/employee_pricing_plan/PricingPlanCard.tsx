@@ -46,16 +46,16 @@ const EmployeePricingPlanCard = () => {
               key={plan.id}
               className={cn(
                 "min-w-[80%] md:min-w-[50%] lg:min-w-[25%] snap-start shrink-0 p-4 transition-all duration-300 ease-in-out",
-                "rounded-xl border border-gray-200 flex flex-col items-center text-center shadow-sm hover:shadow-md",
-                plan.name === "Intern" && "bg-[#F9FAFB]",
-                plan.name === "Junior" && "bg-[#ECFDF5]",
+                "rounded-xl border border-gray-200 dark:border-gray-600 flex flex-col items-center text-center shadow-sm hover:shadow-md",
+                plan.name === "Intern" && "bg-[#F9FAFB] dark:bg-neutral-700",
+                plan.name === "Junior" && "bg-[#ECFDF5] dark:bg-neutral-700",
                 plan.name === "Mid" &&
                   "bg-gradient-to-br from-[#2563EB] to-[#0D9488] text-white",
-                plan.name === "Senior" && "bg-[#F5F7FA]",
-                plan.name === "Advanced" && "bg-[#EFF6FF]",
+                plan.name === "Senior" && "bg-[#F5F7FA] dark:bg-neutral-700",
+                plan.name === "Advanced" && "bg-[#EFF6FF] dark:bg-neutral-700",
                 plan.name === "Executive" &&
                   "bg-gradient-to-br from-[#8B5CF6] to-[#EC4899] text-white",
-                plan.name === "Director" && "bg-[#18181B] text-white"
+                plan.name === "Director" && "bg-[#18181B] text-white dark:bg-neutral-700"
               )}
             >
               <h4 className="font-bold text-lg mb-1">{plan.name} Level</h4>
