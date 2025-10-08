@@ -10,14 +10,28 @@ type Props = React.ComponentProps<"input"> & {
   label?: string;
   prefix?: string;
   options?: string[];
-  onChange?: (value:any) => void
+  onChange?: (value: any) => void
 }
 
 const SearchInput = ({ type, icon, className, error, info, placeholder, label, prefix, options = [], ...props }: Props) => {
   const [id, setId] = useState(Math.random() * 9999);
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const filteredOptions = options.filter(option => option.toLowerCase().includes(searchTerm.toLowerCase())).splice(0, 5)
+  const lowerTerm = searchTerm.toLowerCase();
+
+  // First, get items that start with the term
+  const startsWithMatches = options.filter(option =>
+    option.toLowerCase().startsWith(lowerTerm)
+  );
+
+  // Then, get items that include the term but don’t start with it
+  const includesMatches = options.filter(option =>
+    option.toLowerCase().includes(lowerTerm) &&
+    !option.toLowerCase().startsWith(lowerTerm)
+  );
+
+  // Combine them — prioritizing the “starts with” results
+  const filteredOptions = [...startsWithMatches, ...includesMatches].slice(0, 5);
 
   const handleInputChange = (event: any) => {
     setSearchTerm(event.target.value)
