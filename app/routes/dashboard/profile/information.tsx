@@ -1,17 +1,17 @@
-import { useEffect, useRef, useState, type ChangeEvent } from 'react'
-import { LuUpload } from 'react-icons/lu'
-import Input from '~/components/dashboard/input'
-import Button from '~/components/ui/button'
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from "yup"
-import { useNavigate } from 'react-router'
-import { post } from '~/libs/axios'
-import { useForm } from 'react-hook-form'
-import { type CropperRef, Cropper } from 'react-advanced-cropper';
-import Portal from '~/components/dashboard/portal'
+import { useEffect, useRef, useState, type ChangeEvent } from 'react'
+import { Cropper, type CropperRef } from 'react-advanced-cropper'
 import 'react-advanced-cropper/dist/style.css'
-import useAuth from '~/stores/authStore'
+import { useForm } from 'react-hook-form'
+import { LuUpload } from 'react-icons/lu'
+import { useLoaderData, useNavigate } from 'react-router'
+import * as yup from "yup"
+import Input from '~/components/dashboard/input'
+import Portal from '~/components/dashboard/portal'
 import Textarea from '~/components/dashboard/textarea'
+import Button from '~/components/ui/button'
+import { get, post } from '~/libs/axios'
+import useAuth from '~/stores/authStore'
 
 interface FormErrors {
     [key: string]: string | undefined;
@@ -37,21 +37,40 @@ const schema = yup
         // }).length(11).required(),
     })
     .required()
+export const clientLoader = async () => {
+    try {
+        const res = await get<{ success: boolean, profile: { id: number; title: string; created_at: string; time_slot: string[] }; applicants: number }>('profile')
+
+        const { success, profile, applicants } = res.data;
+        if (success) {
+            return {
+                profile,
+            }
+            // setJobs(jobs);
+            // setDashboard([jobs.length, applicants, 0, 0])
+        }
+    } catch (error) {
+        return {
+            profile: {}
+        }
+    }
+}
 const Information = () => {
+    const { profile } = useLoaderData<any>()
     const navigate = useNavigate()
-    const { updateStep, step} = useAuth();
-    console.log(step)
+    const { updateStep, step } = useAuth();
     const [file, setFile] = useState<File>();
     const inputRef = useRef<HTMLInputElement>(null);
     const [image, setImage] = useState<Image | null>(null);
     const cropperRef = useRef<CropperRef>(null);
     const [openCropper, setOpenCropper] = useState(false);
-    const { formState: { errors }, register, handleSubmit } = useForm({
+    const { formState: { errors, isDirty }, register, handleSubmit } = useForm({
         resolver: yupResolver(schema),
         defaultValues: {
-            about: '',
-            professional_headline: '',
-            location: ''
+            about: profile?.about,
+            professional_headline: profile?.professional_headline,
+            location: profile?.address,
+            // profile_picture: profile?.display_picture
         }
     });
     const [sErrors, setSErrors] = useState<FormErrors>({
@@ -106,7 +125,13 @@ const Information = () => {
         }
 
     }
-    const [imageSrc, setImageSrc] = useState<string | undefined>('');
+    const baseURL = import.meta.env.VITE_BASE_SERVICE_URL;
+
+    const displayPicture =
+        profile?.profile_picture && profile.profile_picture.trim() !== ''
+            ? `${baseURL}${profile.profile_picture}`
+            : undefined;
+    const [imageSrc, setImageSrc] = useState<string | undefined>(displayPicture);
     const onChange = (cropper: CropperRef) => {
         const img = cropper.getCanvas()?.toDataURL()
         setImageSrc(img)
@@ -121,6 +146,12 @@ const Information = () => {
     }, [image]);
 
     const onSubmit = async (form: Inputs) => {
+        if (!isDirty && profile?.about && profile?.professional_headline && profile?.address && profile?.profile_picture) {
+            updateStep(2)
+            navigate('/dashboard/complete-profile/availability');
+            return;
+        }
+        console.log(isDirty);
         if (!file) {
             setSErrors(pv => ({ ...pv, profile_picture: 'Please add a profile picture to continue' }))
             return;
@@ -132,14 +163,14 @@ const Information = () => {
         formData.append(`profile_picture`, file);
 
         try {
-            await post<FormData, {success:boolean; step: number}>('profile/core-information', formData, true)
-            .then(res=>{
-                const {success, step} = res.data;
-                if(success){
-                    updateStep(step)
-                    navigate('/dashboard/complete-profile/availability');
-                }
-            } )
+            await post<FormData, { success: boolean; step: number }>('profile/core-information', formData, true)
+                .then(res => {
+                    const { success, step } = res.data;
+                    if (success) {
+                        updateStep(step)
+                        navigate('/dashboard/complete-profile/availability');
+                    }
+                })
         } catch (error) {
             console.error('Error:', error);
             setSErrors((prev) => ({
@@ -167,9 +198,9 @@ const Information = () => {
                     </div>
                     {sErrors.profile_picture && <span className="text-sm text-red-500">{sErrors.profile_picture}</span>}
                 </div>
-                <Input {...register('professional_headline')} error={sErrors.professional_headline ?? errors?.professional_headline?.message} label="Professional Headline" placeholder="Eg: Product Designer and No-code Developer" info="This will be displayed on your profile and in search results." />
-                <Input {...register('about')} error={sErrors.about ?? errors?.about?.message} label="About" placeholder="Something you wont Employers to see about you" />
-                <Textarea {...register('location')} error={sErrors.location ?? errors?.location?.message} label="Address" placeholder="No 34 Panaf Drive Wuse Zone 1, Abuja, Nigeria" />
+                <Input {...register('professional_headline')} error={sErrors.professional_headline ?? (errors.professional_headline?.message as string | undefined)} label="Professional Headline" placeholder="Eg: Product Designer and No-code Developer" info="This will be displayed on your profile and in search results." />
+                <Input {...register('about')} error={sErrors.about ?? (errors.about?.message as string | undefined)} label="About" placeholder="Something you wont Employers to see about you" />
+                <Textarea {...register('location')} error={sErrors.location ?? (errors.location?.message as string | undefined)} label="Address" placeholder="No 34 Panaf Drive Wuse Zone 1, Abuja, Nigeria" />
 
                 {openCropper && <Portal open={openCropper}>
                     {image && <div className="w-full relative h-full flex items-center flex-col">

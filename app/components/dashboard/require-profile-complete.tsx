@@ -1,11 +1,12 @@
 import { useEffect, useState, type PropsWithChildren } from 'react'
 import { Navigate } from 'react-router'
+import { get } from '~/libs/axios'
 import useAuth from '~/stores/authStore'
 
 type Props = {}
 
 const RequireProfileComplete = ({ children }: PropsWithChildren) => {
-  const { token, user, fetchCurrentUser, updateNumber } = useAuth()
+  const { token, user, updateStep, fetchCurrentUser, updateNumber } = useAuth()
   const [isComplete, setIsComplete] = useState(false);
   const [isSubscribe, setIsSubscribe] = useState(false);
   const [isCompleteBusiness, setIsCompleteBusiness] = useState(false);
@@ -13,6 +14,16 @@ const RequireProfileComplete = ({ children }: PropsWithChildren) => {
   const currentPath = location.pathname;
   useEffect(() => {
     fetchCurrentUser()
+
+    const getProfile = async () => {
+      const res = await get<{ success: boolean,  profile: { steps: number; } }>('profile')
+      console.log("It git here")
+      const { success, profile: { steps } } = res.data;
+      if(success) {
+        updateStep(steps)
+      }
+      getProfile();
+    }
   }, []);
   useEffect(() => {
     const incomplete = !user?.profile?.is_completed && user?.role !== 'business'
@@ -37,7 +48,7 @@ const RequireProfileComplete = ({ children }: PropsWithChildren) => {
   if (isCompleteBusiness) return <Navigate to="/dashboard/complete-profile" replace />
 
   return (
-    <div>{children}</div>
+    <>{children}</>
   )
 }
 

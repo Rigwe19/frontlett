@@ -26,7 +26,6 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     } catch (error) {
         console.log(error)
     }
-
 }
 const Dashboard = ({ loaderData }: Route.ComponentProps) => {
     const { user } = useAuth();

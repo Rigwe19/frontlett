@@ -1,16 +1,39 @@
 import React, { useEffect, useState } from 'react'
 import { LuClock, LuX } from 'react-icons/lu'
-import { useNavigate } from 'react-router'
+import { useLoaderData, useNavigate } from 'react-router'
 import Select from '~/components/dashboard/select'
 import Button from '~/components/ui/button'
-import { post } from '~/libs/axios'
+import { get, post } from '~/libs/axios'
 import { times, days } from '~/libs/job_data'
 import useAuth from '~/stores/authStore'
+export const clientLoader = async () => {
+  try {
+    const res = await get<{ success: boolean, profile: { availability: any; } }>('profile')
+
+    const { success, profile } = res.data;
+    if (success) {
+      return {
+        availability: profile?.availability,
+      }
+    }
+  } catch (error) {
+    return {
+      availability: {}
+    }
+  }
+}
 
 const Availability = () => {
   const navigate = useNavigate()
-  const [timeSlot, setTimeSlot] = useState(false);
-  const [slots, setSlots] = useState<any[]>([]);
+  const { availability } = useLoaderData<any>()
+  const result = Object.entries(availability).flatMap(([day, slots]) =>
+    (slots as string[]).map((slot) => {
+      const [start, end] = slot.split("-");
+      return { day, start, end };
+    })
+  );
+  const [timeSlot, setTimeSlot] = useState(result.length > 0 ? true : false);
+  const [slots, setSlots] = useState<any[]>(result);
   const initialDay = {
     day: '',
     start: '',
@@ -31,8 +54,8 @@ const Availability = () => {
 
   const addSlot = () => {
     const value = [...slots]
-    const isNotValid = value.find(item=> item.day === dayForm.day && item.start === dayForm.start && item.end === dayForm.end)
-    if(!isNotValid) value?.push(dayForm)
+    const isNotValid = value.find(item => item.day === dayForm.day && item.start === dayForm.start && item.end === dayForm.end)
+    if (!isNotValid) value?.push(dayForm)
     setSlots(value)
     setDayForm(initialDay)
     setSErrors({ slots: '' })
@@ -131,8 +154,8 @@ const Availability = () => {
           {timeSlot && <div className="flex p-[17px] flex-col items-start gap-[10px] self-stretch rounded-[12px] border border-[#e2e8f0] dark:border-neutral-500">
             <div className="grid grid-cols-5 gap-2 w-full">
               {slots.map((slot, index) => <div key={`${slot.day}_${index}`} className="flex w-full py-1 px-2 justify-between items-center  rounded-[12px] border border-[#e2e8f0] dark:border-neutral-500 bg-[#FFF] dark:bg-neutral-700">
-                <div className="flex flex-col items-start gap-1 flex-shrink-0">
-                  <h2 className="self-stretch text-[16px] font-medium">{slot.day}</h2>
+                <div className="flex flex-col items-start gap-1 flex-shrink-0 text-[#0F1729] dark:text-neutral-300">
+                  <h2 className="self-stretch text-[16px] font-medium ">{slot.day}</h2>
                   <p className="text-sm">{slot.start}-{slot.end}</p>
                 </div>
                 <LuX size={16} onClick={() => handleDelete(index)} />
@@ -147,9 +170,9 @@ const Availability = () => {
               <div className="flex flex-col gap-2 md:flex-row justify-between w-full">
                 <div className="flex gap-2 flex-col md:flex-row">
                   <Button type="button" onClick={addSlot} className="h-10">Add Slot</Button>
-                  <Button type="button" onClick={handleCopy} className="h-10 bg-[#F0F5FF] dark:bg-neutral-600" outline>Copy to All Weekdays</Button>
+                  <Button type="button" onClick={handleCopy} className="h-10 bg-[#F0F5FF] dark:bg-neutral-600" variant="outline">Copy to All Weekdays</Button>
                 </div>
-                <Button type="button" onClick={() => setTimeSlot(false)} className="h-10 dark:border-neutral-400 border-[#64748B] text-[#64748B] dark:text-neutral-400 hover:bg-red-500/40" outline>Cancel</Button>
+                <Button type="button" onClick={() => setTimeSlot(false)} className="h-10 dark:border-neutral-400 border-[#64748B] text-[#64748B] dark:text-neutral-400 hover:bg-red-500/40" variant="outline">Cancel</Button>
               </div>
             </div>
             {sErrors.slots && <span className="text-sm text-red-500">{sErrors.slots}</span>}

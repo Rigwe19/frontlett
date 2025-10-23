@@ -1,18 +1,55 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { capital, title } from 'case'
-import { useRef, useState, type ChangeEvent, type DragEvent } from 'react'
+import { use, useRef, useState, type ChangeEvent, type DragEvent } from 'react'
 import { useForm } from 'react-hook-form'
 import { LuCirclePlus, LuUpload, LuX } from 'react-icons/lu'
-import { useNavigate } from 'react-router'
+import { useLoaderData, useNavigate } from 'react-router'
 import * as yup from "yup"
 import Input from '~/components/dashboard/input'
 import SearchInput from '~/components/dashboard/search-input'
 import Select from '~/components/dashboard/select'
 import Skills from '~/components/dashboard/skills'
 import Button from '~/components/ui/button'
-import { post } from '~/libs/axios'
+import { get, post } from '~/libs/axios'
 import { courses, schools, type School } from '~/libs/schools'
 import useAuth from '~/stores/authStore'
+export const clientLoader = async () => {
+  try {
+    const res = await get<{ success: boolean, education: any[]; experiences: any[]; profile: { roles: string; skills: string[] }}>('profile')
+
+    const { success, education, experiences, profile: {roles, skills}} = res.data;
+    
+    if (success) {
+      return {
+        education,
+        experiences,
+        roles,
+        skills: skills ?? []
+      }
+    } else {
+      return {
+        education: [],
+        experiences: [],
+        roles: '',
+        skills: []
+      }
+    }
+  } catch (error) {
+    return {
+      education: [],
+      experiences: [],
+      roles: '',
+      skills: []
+    }
+  }
+}
+
+const rolschema = yup
+    .object({
+        role: yup.string().required(),
+        skills: yup.array().required(),
+    })
+    .required()
 
 type Props = {}
 type Form = {
@@ -31,13 +68,16 @@ const data = [{
     value: 'degree'
 }]
 const details = (props: Props) => {
+    const { education, experiences, roles, skills } = useLoaderData<any>();
+    const [exp, setExp] = useState(experiences)
+    const [edu, setEdu] = useState(education)
+    const [rol, setRol] = useState(roles)
+    const [skill, setSkill] = useState(skills)
     const [active, setActive] = useState<'education' | 'experience' | 'roles'>('education');
     const navigate = useNavigate()
     const { updateStep } = useAuth();
     const inputRef = useRef<HTMLInputElement>(null)
     const [dragging, setDragging] = useState(false);
-    const [files, setFiles] = useState<File[]>([]);
-    const [error, setError] = useState('');
     const [type, setType] = useState<any>('');
     const [form, setForm] = useState<any>()
     const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -47,6 +87,13 @@ const details = (props: Props) => {
     const handleDragLeave = () => {
         setDragging(false)
     }
+    const skillForm = useForm({
+        resolver: yupResolver(rolschema),
+        defaultValues: {
+            role: roles,
+            skills: skills,
+        }
+    });
     const handleDrop = (e: DragEvent<HTMLDivElement>) => {
         e.preventDefault()
         setDragging(false)
@@ -60,17 +107,6 @@ const details = (props: Props) => {
             }
         }))
         setType('')
-        // const fileArray: File[] = Array.from(droppedFiles).map(file => file);
-        // const validFiles = fileArray.filter(file => file.type === 'application/pdf' || file.type.startsWith('image/'))
-        // if (validFiles.length !== fileArray.length) {
-        //     setError('Only PDF and images are allowed')
-        // } else {
-        //     setError('')
-        // }
-        // const uniqueFiles = [...files, ...validFiles].filter((file, index, self) => index === self.findIndex(f => f.name === file.name))
-        // setFiles(uniqueFiles);
-        // console.log(uniqueFiles)
-        // props?.onChange && props?.onChange(uniqueFiles)
     }
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -85,16 +121,6 @@ const details = (props: Props) => {
                 }
             }))
             setType('')
-            // const fileArray: File[] = Array.from(selectedFiles).map(file => file);
-            // const validFiles = fileArray.filter(file => file.type === 'application/pdf' || file.type.startsWith('image/'))
-            // if (validFiles.length !== fileArray.length) {
-            //     setError('Only PDF and images are allowed')
-            // } else {
-            //     setError('')
-            // }
-            // const uniqueFiles = [...files, ...validFiles].filter((file, index, self) => index === self.findIndex(f => f.name === file.name))
-            // setFiles(uniqueFiles);
-            // props?.onChange && props?.onChange(uniqueFiles)
         }
     }
     const handleUpload = async () => {
@@ -110,21 +136,20 @@ const details = (props: Props) => {
                     console.log(res)
                 }
             })
-
     }
 
-    const handleNext = async() => {
-      await post<any, {success: boolean; step: number}>('/profile/pro-details/next', {})
-      .then(res=> {
-        const {success, step} = res.data
-        if(success){
-            updateStep(step)
-            navigate('/dashboard/complete-profile/portfolio');
-        }
-            
-      })
+    const handleNext = async () => {
+        await post<any, { success: boolean; step: number }>('/profile/pro-details/next', {})
+            .then(res => {
+                const { success, step } = res.data
+                if (success) {
+                    updateStep(step)
+                    navigate('/dashboard/complete-profile/portfolio');
+                }
+
+            })
     }
-    
+
 
     return (
         <div className="flex flex-col gap-8 max-w-5xl">
@@ -174,9 +199,9 @@ const details = (props: Props) => {
                             <button onClick={() => setActive('roles')} className={`flex p-[6px] justify-center items-center gap-[10px] w-1/3 rounded-[4px] ${active === 'roles' ? 'bg-[#FFF] dark:bg-neutral-600' : ''} text-center text-[14px] font-medium`}>Roles & Skills</button>
                         </div>
                         <div className="flex flex-col gap-[15px] w-full">
-                            {active === 'education' && <Education />}
-                            {active === 'experience' && <Experience />}
-                            {active === 'roles' && <Roles />}
+                            {active === 'education' && <Education educations={edu} setEducations={setEdu} />}
+                            {active === 'experience' && <Experience experiences={exp} setExperiences={setExp} />}
+                            {active === 'roles' && <Roles form={skillForm} />}
                         </div>
                     </div>
                 </div>
@@ -206,7 +231,8 @@ const edu = yup
         ended_at: yup.string().required(),
     })
     .required()
-function Education() {
+function Education({ educations, setEducations }: { educations: any[]; setEducations: React.Dispatch<React.SetStateAction<any[]>> }) {
+
     const { formState: { errors }, register, handleSubmit, setValue, reset } = useForm({
         resolver: yupResolver(edu),
         defaultValues: {
@@ -216,49 +242,83 @@ function Education() {
             ended_at: ''
         }
     });
-    const onSubmit = async (form: any) => {
 
+    const onSubmit = async (form: any) => {
         try {
-            await post<FormData, { success: boolean; result: any }>('profile/pro-details', { ...form, type: 'education' })
-                .then(res => {
-                    const { success, result } = res.data;
-                    if (success) {
-                        console.log(result)
-                        reset()
-                    }
-                })
-            // navigate('/dashboard');
+            const res = await post<FormData, { success: boolean; result: any }>('profile/pro-details', { ...form, type: 'education' });
+            const { success, result } = res.data;
+            if (success) {
+                setEducations(result.education); // add form data to the list
+                reset();
+            }
         } catch (error) {
             console.error('Error:', error);
         }
-    }
+    };
+
     const sch = schools.map((school: School) => school.name)
     const coursess = courses.map(course => title(course))
+
     return (
-        <form className="flex flex-col gap-[15px]" onSubmit={handleSubmit(onSubmit)}>
-            <SearchInput options={coursess} onChange={e => setValue('degree', e)} error={errors?.degree?.message} placeholder="Degree" />
-            <SearchInput options={sch} onChange={e => setValue('institution', e)} error={errors?.institution?.message} placeholder="Institution" />
-            <div className="flex md:gap-[29px] gap-[15px] w-full flex-col md:flex-row">
-                <Input {...register('started_at')} error={errors?.started_at?.message} type="date" className="w-full" placeholder="mm/dd/yy" />
-                <Input {...register('ended_at')} error={errors?.ended_at?.message} type="date" className="w-full" placeholder="mm/dd/yy" />
-            </div>
-            <Button className="w-full">
-                <LuCirclePlus />
-                Add Education
-            </Button>
-        </form>
-    )
+        <>
+            <form className="flex flex-col gap-[15px]" onSubmit={handleSubmit(onSubmit)}>
+                <SearchInput options={coursess} onChange={e => setValue('degree', e)} error={errors?.degree?.message} placeholder="Degree" />
+                <SearchInput options={sch} onChange={e => setValue('institution', e)} error={errors?.institution?.message} placeholder="Institution" />
+                <div className="flex md:gap-[29px] gap-[15px] w-full flex-col md:flex-row">
+                    <Input {...register('started_at')} error={errors?.started_at?.message} type="date" className="w-full" placeholder="mm/dd/yy" />
+                    <Input {...register('ended_at')} error={errors?.ended_at?.message} type="date" className="w-full" placeholder="mm/dd/yy" />
+                </div>
+                <Button className="w-full">
+                    <LuCirclePlus />
+                    Add Education
+                </Button>
+            </form>
+
+            {educations.length > 0 && (
+                <div className="mt-6">
+                    <h3 className="font-semibold text-lg mb-2">Added Education</h3>
+                    <table className="w-full border border-collapse">
+                        <thead>
+                            <tr className="bg-gray-100 dark:bg-neutral-800">
+                                <th className="p-2 border">Degree</th>
+                                <th className="p-2 border">Institution</th>
+                                <th className="p-2 border">Start Date</th>
+                                <th className="p-2 border">End Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {educations.map((edu, i) => (
+                                <tr key={i} className="text-sm text-gray-800 dark:text-neutral-300">
+                                    <td className="p-2 border">{edu.degree}</td>
+                                    <td className="p-2 border">{edu.institution}</td>
+                                    <td className="p-2 border">{edu.started_at}</td>
+                                    <td className="p-2 border">{edu.ended_at}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </>
+    );
 }
+
 const exp = yup
-    .object({
-        title: yup.string().required(),
-        company: yup.string().required(),
-        started_at: yup.string().required(),
-        ended_at: yup.string().required(),
-        is_present: yup.boolean().default(false)
+  .object({
+    title: yup.string().required('Job title is required'),
+    company: yup.string().required('Company name is required'),
+    started_at: yup.string().required('Start date is required'),
+    is_present: yup.boolean().default(false),
+    ended_at: yup.string().when('is_present', {
+      is: false,
+      then: schema => schema.required('End date is required if not currently working'),
+      otherwise: schema => schema.notRequired()
     })
-    .required()
-function Experience() {
+  })
+  .required();
+function Experience({ experiences, setExperiences }: { experiences: any[]; setExperiences: React.Dispatch<React.SetStateAction<any[]>>}) {
+    // const [experiences, setExperiences] = useState<any[]>(data);
+
     const { formState: { errors }, register, handleSubmit, reset } = useForm({
         resolver: yupResolver(exp),
         defaultValues: {
@@ -269,53 +329,72 @@ function Experience() {
             is_present: false
         }
     });
-    const onSubmit = async (form: any) => {
 
+    const onSubmit = async (form: any) => {
         try {
-            await post<FormData, { success: boolean; step: number }>('profile/pro-details', { ...form, type: 'experience' })
-                .then(res => {
-                    const { success, step } = res.data;
-                    if (success) {
-                        reset()
-                    }
-                })
+            const res = await post<FormData, { success: boolean; result: any }>('profile/pro-details', { ...form, type: 'experience' });
+            const { success, result } = res.data;
+            if (success) {
+                setExperiences(result.experience);
+                reset();
+            }
         } catch (error) {
             console.error('Error:', error);
         }
-    }
+    };
+
     return (
-        <form className="flex flex-col gap-[15px]" onSubmit={handleSubmit(onSubmit)}>
-            <Input {...register('title')} error={errors?.title?.message} placeholder="Job Title" />
-            <Input {...register('company')} error={errors?.company?.message} placeholder="Company" />
-            <input {...register('is_present')} type="checkbox" className="w-8 h-8" />
-            <div className="flex gap-[29px] w-full flex-col md:flex-row">
-                <Input {...register('started_at')} error={errors?.started_at?.message} type="date" className="w-full" placeholder="mm/dd/yy" />
-                <Input {...register('ended_at')} error={errors?.ended_at?.message} type="date" className="w-full" placeholder="mm/dd/yy" />
-            </div>
-            <Button className="w-full">
-                <LuCirclePlus />
-                Add Experience
-            </Button>
-        </form>
-    )
+        <>
+            <form className="flex flex-col gap-[15px]" onSubmit={handleSubmit(onSubmit)}>
+                <Input {...register('title')} error={errors?.title?.message} placeholder="Job Title" />
+                <Input {...register('company')} error={errors?.company?.message} placeholder="Company" />
+                <label className="flex items-center gap-2">
+                    <input {...register('is_present')} type="checkbox" />
+                    Currently Working Here
+                </label>
+                <div className="flex gap-[29px] w-full flex-col md:flex-row">
+                    <Input {...register('started_at')} error={errors?.started_at?.message} type="date" className="w-full" placeholder="mm/dd/yy" />
+                    <Input {...register('ended_at')} error={errors?.ended_at?.message} type="date" className="w-full" placeholder="mm/dd/yy" />
+                </div>
+                <Button className="w-full">
+                    <LuCirclePlus />
+                    Add Experience
+                </Button>
+            </form>
+
+            {experiences.length > 0 && (
+                <div className="mt-6">
+                    <h3 className="font-semibold text-lg mb-2">Added Experience</h3>
+                    <table className="w-full border border-collapse">
+                        <thead>
+                            <tr className="bg-gray-100 dark:bg-neutral-800">
+                                <th className="p-2 border">Title</th>
+                                <th className="p-2 border">Company</th>
+                                <th className="p-2 border">Start Date</th>
+                                <th className="p-2 border">End Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {experiences.map((exp, i) => (
+                                <tr key={i} className="text-sm text-gray-800 dark:text-neutral-300">
+                                    <td className="p-2 border">{exp.title}</td>
+                                    <td className="p-2 border">{exp.company}</td>
+                                    <td className="p-2 border">{exp.started_at}</td>
+                                    <td className="p-2 border">{exp.is_present ? 'Present' : exp.ended_at}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </>
+    );
 }
 
-const rol = yup
-    .object({
-        role: yup.string().required(),
-        skills: yup.array().required(),
-    })
-    .required()
-function Roles() {
-    const { formState: { errors }, register, handleSubmit, setValue, watch, reset } = useForm({
-        resolver: yupResolver(rol),
-        defaultValues: {
-            role: '',
-            skills: [],
-        }
-    });
+function Roles({ form }: { form: any;}) {
+    const { formState: { errors }, register, handleSubmit, setValue, watch, reset } = form;
+    console.log(watch('role'))
     const onSubmit = async (form: any) => {
-
         try {
             await post<FormData, { success: boolean; step: number }>('profile/pro-details', { ...form, type: 'roles' })
                 .then(res => {
@@ -332,7 +411,7 @@ function Roles() {
     return (
         <form className="flex flex-col gap-[15px]" onSubmit={handleSubmit(onSubmit)}>
             <Input {...register('role')} error={errors?.role?.message} placeholder="Type Your Role" />
-            <Skills value={watch('skills')} onSave={e => setValue('skills', e)} placeholder="Add Skills......." info={<span>Add skills that are essential for the job</span>} label="Required Skills" />
+            <Skills value={watch('skills')} onSave={e => setValue('skills', e)} placeholder="Add Skills and press enter" info={<span>Add skills that are essential for the job</span>} label="Required Skills" />
             <Button className="w-full">
                 <LuCirclePlus />
                 Save

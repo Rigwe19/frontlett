@@ -66,6 +66,14 @@ interface ErrorResponse {
 }
 
 const handleRequestError = (error: AxiosError<ErrorResponse>, url: string) => {
+    // Handle network errors (no response from server)
+    if (error.code === 'ECONNABORTED' || error.message === 'Network Error' || !error.response) {
+        const networkError = new Error('Network Error: Unable to connect to the server');
+        (networkError as any).status = 0;
+        useLoader.getState().alert('Network Error: Please check your internet connection.', 5000, "error");
+        return Promise.reject(networkError);
+    }
+
     const message = error.response?.data?.message;
     const validationErrors = error.response?.data?.errors;
 
@@ -73,12 +81,12 @@ const handleRequestError = (error: AxiosError<ErrorResponse>, url: string) => {
         const validationError = new Error('Validation Failed');
         (validationError as any).validationErrors = validationErrors;
         (validationError as any).status = error.response.status;
-        useLoader.getState().alert(message ?? `Error while accessing ${url}`, 5000, "error");
+        useLoader.getState().alert(message ?? `Validation Error while accessing ${url}`, 5000, "error");
         return Promise.reject(validationError);
-    } else {
-        useLoader.getState().alert(message ?? `Error while accessing ${url}`, 5000, "error");
     }
 
+    // Default: other server-side or unexpected errors
+    useLoader.getState().alert(message ?? `Error while accessing ${url}`, 5000, "error");
     return Promise.reject(error);
 };
 
@@ -108,6 +116,7 @@ export const post = async <TRequest, TResponse>(
             },
         });
     } catch (error) {
+        console.log(error);
         return handleRequestError(error as AxiosError<ErrorResponse>, url);
     }
 };

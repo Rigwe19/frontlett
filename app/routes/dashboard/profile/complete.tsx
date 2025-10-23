@@ -22,7 +22,6 @@ const Complete = ({ loaderData }: Route.ComponentProps) => {
     const { user, step } = useAuth();
     const page = (step > (user?.profile?.steps ?? 0) ? step : user?.profile?.steps) ?? 1
     let result = '';
-    console.log('log')
     switch (page) {
         case 1:
             result = '/dashboard/complete-profile/core-information'
