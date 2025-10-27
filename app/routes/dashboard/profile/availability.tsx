@@ -26,14 +26,14 @@ export const clientLoader = async () => {
 const Availability = () => {
   const navigate = useNavigate()
   const { availability } = useLoaderData<any>()
-  const result = Object.entries(availability).flatMap(([day, slots]) =>
+  const result = Object.entries(availability??[]).flatMap(([day, slots]) =>
     (slots as string[]).map((slot) => {
       const [start, end] = slot.split("-");
       return { day, start, end };
     })
   );
   const [timeSlot, setTimeSlot] = useState(result.length > 0 ? true : false);
-  const [slots, setSlots] = useState<any[]>(result);
+  const [slots, setSlots] = useState<any[]>(result ?? []);
   const initialDay = {
     day: '',
     start: '',
