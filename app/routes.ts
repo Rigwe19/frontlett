@@ -8,6 +8,7 @@ import {
 
 export default [
   index("routes/home.tsx"),
+  route('/wip-home', "./routes/wip-home.tsx"),
   layout("./routes/dashboard/index.tsx", [
     ...prefix("dashboard", [
       index("./routes/dashboard/dashboard.tsx"),
