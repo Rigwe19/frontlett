@@ -319,7 +319,7 @@ const exp = yup
 function Experience({ experiences, setExperiences }: { experiences: any[]; setExperiences: React.Dispatch<React.SetStateAction<any[]>>}) {
     // const [experiences, setExperiences] = useState<any[]>(data);
 
-    const { formState: { errors }, register, handleSubmit, reset } = useForm({
+    const { formState: { errors }, register, handleSubmit, reset, watch } = useForm({
         resolver: yupResolver(exp),
         defaultValues: {
             title: '',
@@ -354,7 +354,7 @@ function Experience({ experiences, setExperiences }: { experiences: any[]; setEx
                 </label>
                 <div className="flex gap-[29px] w-full flex-col md:flex-row">
                     <Input {...register('started_at')} error={errors?.started_at?.message} type="date" className="w-full" placeholder="mm/dd/yy" />
-                    <Input {...register('ended_at')} error={errors?.ended_at?.message} type="date" className="w-full" placeholder="mm/dd/yy" />
+                    <Input {...register('ended_at')} disabled={watch('is_present')} error={errors?.ended_at?.message} type="date" className="w-full" placeholder="mm/dd/yy" />
                 </div>
                 <Button className="w-full">
                     <LuCirclePlus />
