@@ -37,7 +37,7 @@ import {
     LuX
 } from "react-icons/lu"
 import { TbAffiliate } from 'react-icons/tb'
-import { NavLink, Outlet, useNavigate } from "react-router"
+import { Link, NavLink, Outlet, useNavigate } from "react-router"
 import * as yup from "yup"
 import { post } from "~/libs/axios"
 import useAuth from "~/stores/authStore"
@@ -47,6 +47,7 @@ import Input from "./input"
 import { RiShoppingBag4Line } from "react-icons/ri"
 import { PiUsersThree } from "react-icons/pi"
 import NewAccount from "./new-account"
+import ShareProfileModal from "../share-profile-modal"
 
 interface SidebarProps {
     activePage: string
@@ -72,6 +73,7 @@ const Sidebar: FC<SidebarProps> = ({ activePage }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [openWork, setOpenWork] = useState(false)
     const [openAdd, setOpenAdd] = useState(false)
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [error, setError] = useState('');
     const x = useMotionValue(-asideWidth);
     const spring = useSpring(x, {
@@ -109,31 +111,31 @@ const Sidebar: FC<SidebarProps> = ({ activePage }) => {
 
     const navItems = [
         // { icon: <LuLayoutDashboard size={20} />, label: "Dashboard", path: '/dashboard', id: "dashboard", disabled: false },
-        { icon: <LuUser size={20} />, label: "Account Profile", path: `/${user?.username}`, id: "profile", disabled: false },
-        { icon: <LuFileText size={20} />, label: "Contract", path: '/dashboard/messages', id: "messages", disabled: true },
-        { icon: user?.role === 'business' ? <LuShield size={20} /> : <LuShieldCheck size={20} />, label: user?.role === 'business' ? "Safe Business" : "Vetted Pro", path: user?.role === 'business' ? '/dashboard/safe-business' : '/dashboard/vetted', id: "vetted", disabled: true },
+        { icon: <LuUser size={20} />, label: "Account Profile", path: `/dashboard/profile`, id: "profile", disabled: false },
+        { icon: <LuFileText size={20} />, label: "Contract", path: '/dashboard/coming-soon', id: "messages", disabled: false },
+        { icon: user?.role === 'business' ? <LuShield size={20} /> : <LuShieldCheck size={20} />, label: user?.role === 'business' ? "Safe Business" : "Vetted Pro", path: '/dashboard/coming-soon', id: "vetted", disabled: false },
         { icon: <LuUserCog size={20} />, label: "Account Officer", path: '/dashboard/account-officer', id: "account-officer", disabled: false },
-        { icon: <PiUsersThree size={20} />, label: "Community", path: '/dashboard/community', id: "community", disabled: true },
+        { icon: <PiUsersThree size={20} />, label: "Community", path: '/dashboard/coming-soon', id: "community", disabled: false },
     ]
 
     const leadItems = [
-        { icon: <LuBriefcase size={20} />, label: `${user?.role === 'business' ? 'Business' : 'Work'} Profiles`, id: "jobs", disabled: true },
-        { icon: <LuMonitor size={20} />, label: "Virtualt Jobs", id: "virtualt", disabled: true },
-        { icon: <LuListTodo size={20} />, label: "Virtualtlance Task", id: "virtualtlance", disabled: true },
-        { icon: <LuGraduationCap size={20} />, label: "Learning", id: "learning", disabled: true },
-        { icon: <LuChartPie size={20} />, label: "Reviews & Analytics", id: "reviews", disabled: true },
+        { icon: <LuBriefcase size={20} />, label: `${user?.role === 'business' ? 'Business' : 'Work'} Profiles`, path: '/dashboard/coming-soon', id: "jobs", disabled: false },
+        { icon: <LuMonitor size={20} />, label: "Virtualt Jobs", path: '/dashboard/coming-soon', id: "virtualt", disabled: false },
+        { icon: <LuListTodo size={20} />, label: "Virtualtlance Task", path: '/dashboard/coming-soon', id: "virtualtlance", disabled: false },
+        { icon: <LuGraduationCap size={20} />, label: "Learning", path: '/dashboard/coming-soon', id: "learning", disabled: false },
+        { icon: <LuChartPie size={20} />, label: "Reviews & Analytics", path: '/dashboard/coming-soon', id: "reviews", disabled: false },
     ]
 
     const projectItems = [
-        { icon: <LuCalculator size={20} />, label: "Salary Calculator", id: "salary", disabled: true },
+        { icon: <LuCalculator size={20} />, label: "Salary Calculator", path: '/dashboard/coming-soon', id: "salary", disabled: false },
         { icon: <LuDollarSign size={20} />, label: "Plan & Pricing", path: '/dashboard/pricing', id: "plan", disabled: false },
-        { icon: <LuCreditCard size={20} />, label: "Device & Payday Loan", id: "device", disabled: true },
-        { icon: <LuLink2 size={20} />, label: "Affiliate", id: "affiliate", disabled: true },
-        { icon: <LuWallet size={20} />, label: "Escrow Wallet & Bank", id: "wallet", balance: "0.00", disabled: true },
+        { icon: <LuCreditCard size={20} />, label: "Device & Payday Loan", path: '/dashboard/coming-soon', id: "device", disabled: false },
+        { icon: <LuLink2 size={20} />, label: "Affiliate", id: "affiliate", disabled: false },
+        { icon: <LuWallet size={20} />, label: "Escrow Wallet & Bank", path: '/dashboard/coming-soon', id: "wallet", balance: "0.00", disabled: false },
     ]
 
     const bottomItems = [
-        { icon: <LuSettings size={20} />, label: "Settings", id: "settings", disabled: true, onClick: () => { } },
+        { icon: <LuSettings size={20} />, label: "Settings", id: "settings", disabled: false, path: '/dashboard/coming-soon', onClick: () => { } },
         { icon: <LuLogOut size={20} />, label: "Logout", id: "logout", button: true, onClick: logout },
     ]
 
@@ -299,6 +301,7 @@ const Sidebar: FC<SidebarProps> = ({ activePage }) => {
                         </AnimatePresence>
                     </Menu>
                     <NewAccount open={openAdd} onClose={()=>setOpenAdd(false)} onSubmit={e=>handleAddAccount(e)} />
+                    <ShareProfileModal isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)} />
                     {/* Affiliate Section */}
                     {/* <div className="px-3 my-4">
 
@@ -335,18 +338,18 @@ const Sidebar: FC<SidebarProps> = ({ activePage }) => {
                             <h3 className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">jobs</h3>
                             <ul className="mt-2 space-y-1">
                                 {leadItems.map((item) => (
-                                    <li key={item.id}>
-                                        <button
+                                    <li key={item.id} className={`${item.disabled ? 'pointer-events-none' : 'pointer-events-auto'} rounded-[10px]`}>
+                                        <NavLink
                                             onClick={() => handleClose()}
-                                            // href={`#${item.id}`}
-                                            className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-md w-full ${activePage === item.id ? "bg-blue-600 text-white" : "text-gray-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:text-white dark:hover:bg-neutral-400"
+                                            to={item.path}
+                                            className={({ isActive }) => `flex items-center px-3 py-2.5 text-sm font-medium rounded-md w-full ${location.pathname === item.path ? "bg-blue-600 text-white" : "text-gray-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:text-white dark:hover:bg-neutral-400"
                                                 }`}
                                         >
                                             <span className="mr-3">{item.icon}</span>
                                             {item.label}
-                                        </button>
+                                        </NavLink>
                                     </li>
-                                ))}
+                                    ))}
                             </ul>
                         </div>
 
@@ -356,11 +359,11 @@ const Sidebar: FC<SidebarProps> = ({ activePage }) => {
                             <ul className="mt-2 space-y-1">
                                 {projectItems.map((item) => {
                                     if (item.id !== 'affiliate') {
-                                        return (<li key={item.id}>
-                                            <button
+                                        return (<li key={item.id} className={`${item.disabled ? 'pointer-events-none' : 'pointer-events-auto'} rounded-[10px]`}>
+                                            <NavLink
                                                 onClick={() => handleClose(item.path ?? undefined)}
-                                                // href={`#${item.id}`}
-                                                className={`flex items-center justify-between px-3 py-2.5 text-sm font-medium group rounded-md w-full ${activePage === item.id ? "bg-blue-600 text-white" : "text-gray-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:text-white dark:hover:bg-neutral-400"
+                                                to={item.path ?? ''}
+                                                className={({ isActive }) => `flex items-center justify-between px-3 py-2.5 text-sm font-medium group rounded-md w-full ${location.pathname === item.path ? "bg-blue-600 text-white" : "text-gray-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:text-white dark:hover:bg-neutral-400"
                                                     }`}
                                             >
                                                 <div className="flex gap-1">
@@ -371,7 +374,7 @@ const Sidebar: FC<SidebarProps> = ({ activePage }) => {
                                                     <span className="text-xs text-gray-500 dark:text-neutral-400 group-hover:dark:text-neutral-500 font-sans">₦</span>
                                                     <span className="text-xs text-gray-500 dark:text-neutral-400 group-hover:dark:text-neutral-500">{item.balance}</span>
                                                 </div>}
-                                            </button>
+                                        </NavLink>
                                         </li>)
                                     } else {
                                         return (
@@ -440,11 +443,11 @@ const Sidebar: FC<SidebarProps> = ({ activePage }) => {
                     <div className="px-3 py-4 mt-4 border-t border-t-gray-200 dark:border-t-neutral-700">
                         <ul className="space-y-1">
                             {bottomItems.map((item) => (
-                                <li key={item.id}>
+                                <li key={item.id} className={`${item.disabled ? 'pointer-events-none' : 'pointer-events-auto'} rounded-[10px]`}>
                                     <button
                                         // href={`#${item.id}`}
-                                        onClick={() => { handleClose(); item.onClick() }}
-                                        className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-md w-full ${activePage === item.id
+                                        onClick={() => { handleClose(item.path); item.onClick && item.onClick() }}
+                                        className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-md w-full ${location.pathname === item.path
                                             ? "bg-blue-600 text-white"
                                             : item.id === "logout"
                                                 ? "text-red-500 hover:bg-red-50"
@@ -514,10 +517,12 @@ const Sidebar: FC<SidebarProps> = ({ activePage }) => {
                                             </span>
                                         </MenuItem>
                                         <MenuItem>
-                                            <span className="flex h-10 pl-5 w-full items-center gap-5 shrink-0 text-sm font-medium data-focus:bg-primary leading-5 text-[#0F1729] dark:text-neutral-200">
-                                                <LuShare2 size={18} />
-                                                Share Profile
-                                            </span>
+                                            <button onClick={() => setIsShareModalOpen(true)} className="flex h-10 pl-5 w-full items-center gap-5 shrink-0 text-sm font-medium data-focus:bg-primary leading-5 text-[#0F1729] dark:text-neutral-200 text-left">
+                                                <span className="flex items-center gap-5">
+                                                    <LuShare2 size={18} />
+                                                    Share Profile
+                                                </span>
+                                            </button>
                                         </MenuItem>
                                         <MenuItem>
                                             <span className="flex h-10 pl-5 w-full mb-1 items-center gap-5 shrink-0 text-sm font-medium data-focus:bg-primary leading-5 text-[#0F1729] dark:text-neutral-200">
@@ -526,7 +531,7 @@ const Sidebar: FC<SidebarProps> = ({ activePage }) => {
                                             </span>
                                         </MenuItem>
                                         <MenuItem>
-                                            <div className="flex mx-5 min-w-[214px] items-center gap-[13.208px] bg-[#F5F8FF] dark:bg-neutral-600 px-[9.906px] py-0.5 rounded-[19.812px]">
+                                            <Link to="/dashboard/account-officer" className="flex mx-5 min-w-[214px] items-center gap-[13.208px] bg-[#F5F8FF] dark:bg-neutral-600 px-[9.906px] py-0.5 rounded-[19.812px]">
                                                 <img
                                                     src="/images/avatar.png"
                                                     alt="" className="size-[23px] rounded-full" />
@@ -534,7 +539,7 @@ const Sidebar: FC<SidebarProps> = ({ activePage }) => {
                                                     <h2 className="h-[21.111px] self-stretch text-[#0F1729] dark:text-neutral-200 font-medium leading-[21.111px]">{user?.manager?.name}</h2>
                                                     <p className="h-[16.889px] text-[13.051px] font-normal leading-[16.889px]">Account Manager</p>
                                                 </div>
-                                            </div>
+                                            </Link>
                                         </MenuItem>
                                     </MenuItems>
                                 </Menu>
@@ -644,4 +649,3 @@ const Sidebar: FC<SidebarProps> = ({ activePage }) => {
 }
 
 export default Sidebar
-

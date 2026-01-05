@@ -10,6 +10,7 @@ type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: Size;
   to?: LinkProps["to"];
   disabled?: boolean;
+  isLoading?: boolean;
 };
 
 const baseClasses =

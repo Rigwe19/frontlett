@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import Footer from "../footer";
 import Navbar from "../navbar";
 import { LuInfo } from "react-icons/lu";

@@ -39,10 +39,11 @@ const RequireProfileComplete = ({ children }: PropsWithChildren) => {
       ? <Navigate to="/dashboard/complete-profile" replace />
       : <Navigate to="/dashboard/complete-profile/core-information" replace />;
   }
+  const hasSubscription = user.subscription;
   const subscribe = !!user?.subscription;
   const isOnPricing = currentPath.includes('pricing')
-  console.log(subscribe, isOnPricing, user?.profile?.is_completed)
-  if (!subscribe && !isOnPricing && user?.profile?.is_completed) return <Navigate to="/dashboard/pricing" replace />
+  console.log(hasSubscription, isOnPricing, user?.profile?.is_completed) // true, true, true
+  if (!hasSubscription && !isOnPricing && user?.profile?.is_completed) return <Navigate to="/dashboard/pricing" replace />
 
   return (
     <>{children}</>

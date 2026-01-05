@@ -91,6 +91,7 @@ interface Profile {
   description: string;
   availability: any;
   roles: string[];
+  role: string;
   skills: string[];
   rate: number;
   is_completed: boolean;
@@ -211,7 +212,7 @@ const useAuth = create<UseAuthStore>()(
           });
 
           // const userData = response.data;
-          // console.log(response.data);
+          console.log(response.data.user);
           set({ token: response.data.token, user: response.data.user });
           if (!response.data.user.phone_verified_at) {
             set({ number: response.data.user.phone_number });
@@ -279,7 +280,7 @@ const useAuth = create<UseAuthStore>()(
         try {
           const response: AxiosResponse = await deleteRequest(`/auth/logout`);
           if (response.data.success) {
-            set({ token: null });
+            set({ token: null, user: null });
           }
 
           // console.log("SETUP", { token: userData.token });

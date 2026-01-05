@@ -111,7 +111,7 @@ const Login = () => {
         },
     });
 
-
+    alert(import.meta.env.VITE_BASE_SERVICE_URL)
     return (
         <div className="flex relative items-center flex-col min-h-screen font-general">
             <div className="w-full h-[45px] justify-end items-center flex mt-6 px-8">

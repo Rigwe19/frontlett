@@ -20,6 +20,8 @@ interface Plan {
   name: string;
   hireRange: string;
   businessLimit: string;
+  profileLimit: string;
+  resourceAccess: string;
   requestQuote?: boolean;
   prices: PlanPrices;
   features: number[];
@@ -56,6 +58,7 @@ interface PricingStore {
   currency: Currency;
   billingCycle: BillingCycle;
   isModalOpen: boolean;
+  isSuccess: boolean;
   selectedPlanId: string | null;
   selectedPriceType: PriceType | null;
   includeAddOns: boolean;
@@ -69,6 +72,7 @@ interface PricingStore {
   setAddOns: (addOns: AddOn[]) => void;
   setCurrency: (currency: Currency) => void;
   openModal: (planId: string, priceType: PriceType) => void;
+  openSuccessModal: (isOpen: boolean) => void;
   closeModal: () => void;
   setIncludeAddOns: (value: boolean) => void;
   setTotalPrice: (price: number | null) => void;
@@ -90,6 +94,7 @@ export const usePricingStore = create<PricingStore>((set, get) => ({
   currency: "NGN",
   billingCycle: "annually",
   isModalOpen: false,
+  isSuccess: false,
   selectedPlanId: null,
   selectedPriceType: null,
   includeAddOns: false,
@@ -100,6 +105,8 @@ export const usePricingStore = create<PricingStore>((set, get) => ({
     name: "Free for Life",
     hireRange: "Hire for 1 Slot",
     businessLimit: "1 Business",
+    profileLimit: "1 Profile",
+    resourceAccess: "1 Resource",
     requestQuote: false,
     prices: {
       NGN: {
@@ -136,6 +143,12 @@ export const usePricingStore = create<PricingStore>((set, get) => ({
       selectedPriceType: priceType,
       isModalOpen: true,
     }),
+  openSuccessModal: (isOpen) => {
+
+    set({
+      isSuccess: isOpen,
+    })
+  },
   closeModal: () =>
     set({ selectedPlanId: null, selectedPriceType: null, isModalOpen: false }),
   setIncludeAddOns: (value) => set({ includeAddOns: value }),

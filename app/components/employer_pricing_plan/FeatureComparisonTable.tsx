@@ -4,6 +4,7 @@ import Button from "~/components/ui/button";
 import { cn, getPriceLabel } from "~/libs/utils";
 // import { plans } from '~/libs/pricing'
 import { LuCheck, LuX } from "react-icons/lu";
+import useAuth from "~/stores/authStore";
 
 const FeatureComparisonTable = () => {
   const priceTypes = [
@@ -12,7 +13,7 @@ const FeatureComparisonTable = () => {
     "Pro",
     "Lifetime Pro",
   ] as const;
-
+  const { user } = useAuth();
   const { currency, billingCycle, openModal, plans, features } = usePricingStore();
 
   return (
@@ -30,7 +31,9 @@ const FeatureComparisonTable = () => {
                 {plan.name}
               </th>
             ))}
+
           </tr>
+
         </thead>
         <tbody>
           {/* --- Basic Feature Section Header --- */}
@@ -41,33 +44,119 @@ const FeatureComparisonTable = () => {
           </tr>
           {/* Max Hires */}
           <tr className="border-t">
-            <td className="p-3">Max Hires</td>
-            {plans.map((plan) => (
-              <td key={plan.id} className="p-3 text-center">
-                {plan.hireRange
-                  ? /unlimited/i.test(plan.hireRange)
-                    ? "Unlimited"
-                    : plan.hireRange.match(/\d+\s*(–|-)?\s*\d*/)?.[0] || "-"
-                  : "-"}
-              </td>
-            ))}
+            <td className="p-3">{user?.profile?.role !== 'business' ? 'Max Profiles' : 'Max Hires'}</td>
+            {plans.map((plan) => {
+              if (user?.profile?.role === 'business') {
+                return (
+                  <td key={plan.id} className="p-3 text-center">
+                    {plan.hireRange
+                      ? /unlimited/i.test(plan.hireRange)
+                        ? "Unlimited"
+                        : plan.hireRange.match(/\d+\s*(–|-)?\s*\d*/)?.[0] || "-"
+                      : "-"}
+                  </td>
+                )
+              }
+              return (
+                <td key={plan.id} className="p-3 text-center">
+                  {plan.profileLimit
+                    ? /unlimited/i.test(plan.profileLimit)
+                      ? "Unlimited"
+                      : plan.profileLimit.match(/\d+/)?.[0] || "-"
+                    : "-"}
+                </td>
+              )
+            })}
           </tr>
           {/* Max Businesses */}
           <tr className="border-t">
-            <td className="p-3">Max Businesses</td>
-            {plans.map((plan) => (
-              <td key={plan.id} className="p-3 text-center">
-                {plan.businessLimit
-                  ? /unlimited/i.test(plan.businessLimit)
-                    ? "Unlimited"
-                    : plan.businessLimit.match(/Up to \d+/i)?.[0] ||
-                    plan.businessLimit.match(/\d+/)?.[0] ||
-                    "-"
-                  : "-"}
-              </td>
-            ))}
+            <td className="p-3">{user?.profile?.role !== 'business' ? 'Resource Types' : 'Max Businesses'}</td>
+            {plans.map((plan) => {
+              if (user?.profile?.role === "business") {
+                return (
+                  <td key={plan.id} className="p-3 text-center">
+                    {plan.businessLimit
+                      ? /unlimited/i.test(plan.businessLimit)
+                        ? "Unlimited"
+                        : plan.businessLimit.match(/Up to \d+/i)?.[0] ||
+                        plan.businessLimit.match(/\d+/)?.[0] ||
+                        "-"
+                      : "-"}
+                  </td>
+                )
+              }
+              return (
+                <td key={plan.id} className="p-3 text-center">
+                  {plan.resourceAccess
+                    ? /all/i.test(plan.resourceAccess)
+                      ? "All"
+                      : plan.resourceAccess.match(/\d+/)?.[0] || "-"
+                    : "-"}
+                </td>
+              )
+            })}
           </tr>
-          <tr className="border-t">
+          {/* Slot Rollover */}
+          {user?.profile?.role !== "business" && <><tr className="border-t">
+            <td className="p-3">Slot Rollover</td>
+            {plans.map((plan) => {
+              const enabledFor = [
+                "Junior",
+                "Mid",
+                "Senior",
+                "Advanced",
+                "Executive",
+                "Director",
+              ];
+              const isEnabled = enabledFor.includes(plan.name);
+
+              return (
+                <td key={plan.id} className="p-3 text-center">
+                  {isEnabled ? (
+                    <span className="inline-flex items-center gap-1 text-sm">
+                      <LuCheck className="text-green-600" size={24} />
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-sm">
+                      <LuX className="text-red-500" size={24} />
+                    </span>
+                  )}
+                </td>
+              );
+            })}
+          </tr>
+
+            {/* Support */}
+            <tr className="border-t">
+              <td className="p-3">Support</td>
+              {plans.map((plan) => {
+                let label = "";
+                let showLabel = true;
+
+                if (plan.name === "Intern") label = "Email";
+                else if (plan.name === "Junior" && "Mid") label = "Chat";
+                else if (plan.name === "Senior") label = "Priority";
+                else if (plan.name === "Advanced") label = "Dedicated";
+                else if (plan.name === "Executive") label = "VIP";
+                else if (plan.name === "Director") label = "24/7 Concierge";
+                else showLabel = false;
+
+                return (
+                  <td key={plan.id} className="p-3 text-center">
+                    {showLabel ? (
+                      <span className="inline-flex items-center gap-1 text-sm">
+                        <LuCheck className="text-green-600" size={24} />{label}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-sm">
+                        <LuX className="text-red-500" size={24} />
+                      </span>
+                    )}
+                  </td>
+                );
+              })}
+            </tr></>}
+          {user?.profile?.role === "business" && <tr className="border-t">
             <td className="p-3">HR Account Manager</td>
             {plans.map((plan) => {
               let label = "";
@@ -94,7 +183,7 @@ const FeatureComparisonTable = () => {
                 </td>
               );
             })}
-          </tr>
+          </tr>}
           {features.map((feature, index) => {
             if (feature.type === "pro" || feature.id < 4) return null;
 
@@ -128,54 +217,211 @@ const FeatureComparisonTable = () => {
             </td>
           </tr>
           {/* Verified Pro Access */}
-          <tr>
-            <td className="p-3">Verified Pro Access</td>
-            {plans.map((plan) => (
-              <td key={plan.id} className="p-3 text-center">
-                {plan.name === "Free for Life" ? (
-                  <span className="inline-flex items-center gap-1 text-sm">
-                    <LuX className="text-red-500" size={24} />
-                  </span>
-                ) : plan.name === "Startup" ? (
-                  <span className="inline-flex items-center gap-1 text-sm">
-                    <LuCheck className="text-green-600" size={24} /> Limited
-                  </span>
-                ) : (
+          {user?.profile?.role === 'business' && <>
+            <tr>
+              <td className="p-3">Verified Pro Access</td>
+              {plans.map((plan) => (
+                <td key={plan.id} className="p-3 text-center">
+                  {plan.name === "Free for Life" ? (
+                    <span className="inline-flex items-center gap-1 text-sm">
+                      <LuX className="text-red-500" size={24} />
+                    </span>
+                  ) : plan.name === "Startup" ? (
+                    <span className="inline-flex items-center gap-1 text-sm">
+                      <LuCheck className="text-green-600" size={24} /> Limited
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-sm">
+                      <LuCheck className="text-green-600" size={24} />
+                    </span>
+                  )}
+                </td>
+              ))}
+            </tr>
+            {/* Custom Dashboards */}
+            <tr>
+              <td className="p-3">Custom Dashboards</td>
+              {plans.map((plan) => (
+                <td key={plan.id} className="p-3 text-center">
+                  {plan.name === "Free for Life" ? (
+                    <span className="inline-flex items-center gap-1 text-sm">
+                      <LuX className="text-red-500" size={24} />
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-sm">
+                      <LuCheck className="text-green-600" size={24} />
+                    </span>
+                  )}
+                </td>
+              ))}
+            </tr>
+            {/* Micro-Contract Automation */}
+            <tr>
+              <td className="p-3">Micro-Contract Automation</td>
+              {plans.map((plan) => (
+                <td key={plan.id} className="p-3 text-center">
                   <span className="inline-flex items-center gap-1 text-sm">
                     <LuCheck className="text-green-600" size={24} />
                   </span>
-                )}
-              </td>
-            ))}
-          </tr>
-          {/* Custom Dashboards */}
-          <tr>
-            <td className="p-3">Custom Dashboards</td>
-            {plans.map((plan) => (
-              <td key={plan.id} className="p-3 text-center">
-                {plan.name === "Free for Life" ? (
-                  <span className="inline-flex items-center gap-1 text-sm">
-                    <LuX className="text-red-500" size={24} />
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 text-sm">
-                    <LuCheck className="text-green-600" size={24} />
-                  </span>
-                )}
-              </td>
-            ))}
-          </tr>
-          {/* Micro-Contract Automation */}
-          <tr>
-            <td className="p-3">Micro-Contract Automation</td>
-            {plans.map((plan) => (
-              <td key={plan.id} className="p-3 text-center">
-                <span className="inline-flex items-center gap-1 text-sm">
-                  <LuCheck className="text-green-600" size={24} />
-                </span>
-              </td>
-            ))}
-          </tr>
+                </td>
+              ))}
+            </tr>
+          </>}
+          {user?.profile?.role !== 'business' && <>
+            <tr className="border-t">
+              <td className="p-3">Micro-Credentials</td>
+              {plans.map((plan) => {
+                let label = "";
+                let show = true;
+
+                switch (plan.name) {
+                  case "Intern":
+                    label = "Basic";
+                    break;
+                  case "Junior":
+                  case "Mid":
+                    label = "";
+                    break;
+                  case "Senior":
+                  case "Advanced":
+                    label = "Advanced";
+                    break;
+                  case "Executive":
+                    label = "Premium";
+                    break;
+                  case "Director":
+                    label = "Unlimited";
+                    break;
+                  default:
+                    show = false;
+                }
+
+                return (
+                  <td key={plan.id} className="p-3 text-center">
+                    {show ? (
+                      <span className="inline-flex items-center gap-1 text-sm">
+                        <LuCheck className="text-green-600" size={24} />{label}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-sm">
+                        <LuX className="text-red-500" size={24} />
+                      </span>
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
+
+            {/* Analytics Dashboard */}
+            <tr className="border-t">
+              <td className="p-3">Analytics Dashboard</td>
+              {plans.map((plan) => {
+                let label = "";
+                let show = true;
+
+                switch (plan.name) {
+                  case "Junior":
+                    label = "Lite";
+                    break;
+                  case "Mid":
+                  case "Senior":
+                    label = "";
+                    break;
+                  case "Advanced":
+                    label = "Advanced";
+                    break;
+                  case "Executive":
+                    label = "Premium";
+                    break;
+                  case "Director":
+                    label = "Enterprise";
+                    break;
+                  default:
+                    show = false;
+                }
+
+                return (
+                  <td key={plan.id} className="p-3 text-center">
+                    {show ? (
+                      <span className="inline-flex items-center gap-1 text-sm">
+                        <LuCheck className="text-green-600" size={24} />{label}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-sm">
+                        <LuX className="text-red-500" size={24} />
+                      </span>
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
+
+            {/* API Access */}
+            <tr className="border-t">
+              <td className="p-3">API Access</td>
+              {plans.map((plan) => {
+                let label = "";
+                let show = true;
+
+                switch (plan.name) {
+                  case "Senior":
+                    label = "Basic";
+                    break;
+                  case "Advanced":
+                  case "Executive":
+                  case "Director":
+                    label = "Full";
+                    break;
+                  default:
+                    show = false;
+                }
+
+                return (
+                  <td key={plan.id} className="p-3 text-center">
+                    {show ? (
+                      <span className="inline-flex items-center gap-1 text-sm">
+                        <LuCheck className="text-green-600" size={24} />{label}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-sm">
+                        <LuX className="text-red-500" size={24} />
+                      </span>
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
+
+            {/* Skill Certification */}
+            <tr className="border-t">
+              <td className="p-3">Skill Certification</td>
+              {plans.map((plan) => {
+                const enabledFor = [
+                  "Mid",
+                  "Senior",
+                  "Advanced",
+                  "Executive",
+                  "Director",
+                ];
+                const isEnabled = enabledFor.includes(plan.name);
+
+                return (
+                  <td key={plan.id} className="p-3 text-center">
+                    {isEnabled ? (
+                      <span className="inline-flex items-center gap-1 text-sm">
+                        <LuCheck className="text-green-600" size={24} />
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-sm">
+                        <LuX className="text-red-500" size={24} />
+                      </span>
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
+          </>}
+
           {features.map((feature) => {
             if (feature.type !== "pro") return null;
 
@@ -228,17 +474,17 @@ const FeatureComparisonTable = () => {
               </td>
               {plans.map((plan) => {
                 let type = ''
-                if(priceType === "Basic" && billingCycle === 'monthly') {
+                if (priceType === "Basic" && billingCycle === 'monthly') {
                   type = "basic-monthly";
-                } else if(priceType === "Basic" && billingCycle === 'annually') {
+                } else if (priceType === "Basic" && billingCycle === 'annually') {
                   type = "basic-annual";
-                } else if(priceType === "Lifetime Basic") {
+                } else if (priceType === "Lifetime Basic") {
                   type = "lifetime-basic";
-                }else if(priceType === "Pro" && billingCycle === 'monthly') {
+                } else if (priceType === "Pro" && billingCycle === 'monthly') {
                   type = "pro-monthly";
-                } else if(priceType === "Pro" && billingCycle === 'annually') {
+                } else if (priceType === "Pro" && billingCycle === 'annually') {
                   type = "pro-annual";
-                } else if(priceType === "Lifetime Pro") {
+                } else if (priceType === "Lifetime Pro") {
                   type = "lifetime-pro";
                 }
                 const priceValue =

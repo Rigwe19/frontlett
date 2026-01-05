@@ -39,9 +39,9 @@ export default [
         ),
       ]),
       route("complete-profile", "./routes/dashboard/profile/employer_onboarding.tsx"),
+      route("coming-soon", "./routes/dashboard/coming-soon.tsx"),
+      route("profile", "./routes/dashboard/profile/profile.tsx"),
     ]),
-
-    route(":username", "./routes/dashboard/profile/profile.tsx"),
   ]),
   // layout("./routes/dashboard/index.tsx", [
   // ]),
@@ -60,4 +60,5 @@ export default [
     ),
   ]),
   route("invite/:code", "./routes/invite.tsx"),
+  route(":username", "./routes/profile.tsx"),
 ] satisfies RouteConfig;

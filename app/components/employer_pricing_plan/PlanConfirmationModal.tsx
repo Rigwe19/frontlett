@@ -9,9 +9,11 @@ import { useLoader } from "~/stores/loaderStore";
 import { post, put } from "~/libs/axios";
 import useAuth from "~/stores/authStore";
 import { usePaystackPayment } from 'react-paystack';
+import Modal from "../dashboard/modal";
 
 export default function PlanConfirmationModal() {
   const { user } = useAuth();
+  const isBusiness = user?.profile.role === 'business';
   // const reference = (new Date()).getTime().toString();
   const ref = useRef<string>('');
   const {
@@ -31,6 +33,7 @@ export default function PlanConfirmationModal() {
     setTotalPrice,
     setSelectedAddOns,
     setCurrent,
+    openSuccessModal
   } = usePricingStore();
   // console.log(import.meta.env.VITE_PAYSTACK_KEY)
   const initializePayment = usePaystackPayment({publicKey: import.meta.env.VITE_PAYSTACK_KEY});
@@ -38,6 +41,7 @@ export default function PlanConfirmationModal() {
   const { alert } = useLoader();
 
   const plan = plans.find((p) => p.id === selectedPlanId) ?? null;
+  console.log(selectedPlanId)
   let type = ''
   if (selectedPriceType === "Basic" && billingCycle === 'monthly') {
     type = "basic-monthly";
@@ -99,6 +103,7 @@ export default function PlanConfirmationModal() {
       const response = await put<any, { success: boolean, subscription: any }>('/subscription/paid', { ...reference })
       if (!response.data.success) throw new Error("Subscription failed");
       setCurrent(response.data.subscription)
+      openSuccessModal(true)
       closeModal()
     } catch (err) {
       console.error("Failed to subscribe:", err);
@@ -163,6 +168,7 @@ export default function PlanConfirmationModal() {
       } else {
         setCurrent(response.data.subscription)
         closeModal();
+        openSuccessModal(true)
       }
 
     } catch (err) {
@@ -172,19 +178,20 @@ export default function PlanConfirmationModal() {
   };
 
   // Modal rendering logic
-  if (!isModalOpen || !plan || !selectedPriceType) return null;
+  if (!plan || !selectedPriceType) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 bg-opacity-50 z-50 flex items-center justify-center px-4">
-      <div className="bg-white dark:bg-neutral-900 w-full max-w-xl rounded-lg shadow-xl p-6 relative">
-        <button
+    <Modal isOpen={isModalOpen} onClose={closeModal} title={"Choose Your Plan"}>
+      <div className="w-full lex items-center justify-center md:px-4">
+      <div className="w-full max-w-xl rounded-lg relative">
+        {/* <button
           className="absolute top-3 right-3 text-gray-500 hover:text-black"
           onClick={closeModal}
         >
           <LuX className="w-5 h-5" />
-        </button>
+        </button> */}
 
-        <h3 className="text-lg font-semibold mb-6">Choose Your Plan</h3>
+        {/* <h3 className="text-lg font-semibold mb-6"></h3> */}
 
         {/* Plan boxes */}
         <div className="flex justify-between gap-4 mb-6">
@@ -193,9 +200,9 @@ export default function PlanConfirmationModal() {
             {/* {JSON.stringify(plans)} */}
             <p className="font-semibold">{current?.name ?? "Free for Lifes"}</p>
             <p className="text-xs">
-              {current.hireRange}
+              {isBusiness ? current.hireRange : current.profileLimit}
               <br />
-              {current.businessLimit}
+              {isBusiness ? current.businessLimit : current.resourceAccess}
             </p>
             <p className="mt-2">{formatted(current.total_price)}/{current?.billing_cycle}</p>
           </div>
@@ -203,9 +210,9 @@ export default function PlanConfirmationModal() {
             <p className="text-blue-500 font-medium">New Plan</p>
             <p className="font-semibold">{plan.name}</p>
             <p className="text-xs">
-              {plan.hireRange}
+              {isBusiness ? plan.hireRange : plan.profileLimit}
               <br />
-              {plan.businessLimit}
+              {isBusiness ? plan.businessLimit : plan.resourceAccess}
             </p>
             <p className="mt-2">{getPriceLabel(basePrice, currency)}/{billingCycle === 'monthly' ? 'month' : 'year'}</p>
           </div>
@@ -313,5 +320,7 @@ export default function PlanConfirmationModal() {
         </div>
       </div>
     </div>
+    </Modal>
+    
   );
 }

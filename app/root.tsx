@@ -1,12 +1,15 @@
 import {
   isRouteErrorResponse,
   Links,
+  Link,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useRouteError,
 } from "react-router";
 
+import { LuTriangleAlert, LuHouse } from "react-icons/lu";
 import type { Route } from "./+types/root";
 import "./app.css";
 import { useLoader } from "./stores/loaderStore";
@@ -82,31 +85,52 @@ export default function App() {
   return <Outlet />;
 }
 
-export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
-  let stack: string | undefined;
+export function ErrorBoundary() {
+  const error = useRouteError();
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
-    details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
-  } else if (import.meta.env.DEV && error && error instanceof Error) {
-    details = error.message;
-    stack = error.stack;
+    return (
+      <Layout>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-neutral-900 text-center p-4">
+          <div className="bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-full mb-6">
+            <LuTriangleAlert size={48} />
+          </div>
+          <h1 className="text-6xl font-bold text-gray-800 dark:text-neutral-200">{error.status}</h1>
+          <p className="text-2xl font-semibold text-gray-700 dark:text-neutral-300 mt-2">{error.statusText}</p>
+          <p className="text-lg text-gray-600 dark:text-neutral-400 mt-4 max-w-md">
+            {error.status === 404 ? "Sorry, the page you are looking for does not exist." : "Sorry, something went wrong on our end."}
+          </p>
+          <Link to="/" className="mt-8 inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary/90 transition-colors">
+            <LuHouse />
+            Go back home
+          </Link>
+        </div>
+      </Layout>
+    );
   }
 
+  const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+
   return (
-    <main className="flex flex-col justify-center items-center h-screen">
-      <h1 className="text-[80px] font-bold leading-[150%]">{message}</h1>
-      <p className="text-lg">{details}</p>
-      {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
+    <Layout>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-neutral-900 text-center p-4">
+        <div className="bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-full mb-6">
+          <LuTriangleAlert size={48} />
+        </div>
+        <h1 className="text-4xl font-bold text-gray-800 dark:text-neutral-200">Oops, something went wrong!</h1>
+        <p className="text-lg text-gray-600 dark:text-neutral-400 mt-4 max-w-md">
+          We encountered an unexpected error. Please try again later.
+        </p>
+        {import.meta.env.DEV && (
+          <pre className="mt-6 text-left text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/10 p-4 rounded-lg overflow-auto max-w-2xl w-full">
+            <code>{errorMessage}</code>
+          </pre>
+        )}
+        <Link to="/" className="mt-8 inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary/90 transition-colors">
+          <LuHouse />
+          Go back home
+        </Link>
+      </div>
+    </Layout>
   );
 }
